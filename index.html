@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Wer muss?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Press+Start+2P&family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
@@ -121,7 +121,13 @@ html,body{overflow-x:hidden;max-width:100%}body{position:relative;-webkit-text-s
 #fx{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:15}
 .arc.fs{left:0;top:0;right:0;bottom:0;width:auto!important;height:auto!important}
 @media (orientation:portrait){#arc3.fs canvas{position:absolute;left:50%;top:50%;width:100vh;width:100dvh;height:100vw;transform:translate(-50%,-50%) rotate(90deg);object-fit:contain}
- #arc3.fs::after{content:'📱 Handy quer halten';position:absolute;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));text-align:center;color:#ffd400;font:10px "Press Start 2P",monospace;pointer-events:none}}
+ #arc3.fs::after{content:'📱 Handy nach links drehen ↺';position:absolute;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));text-align:center;color:#ffd400;font:10px "Press Start 2P",monospace;pointer-events:none}}
+html{touch-action:manipulation}
+.arcov input{font-size:16px!important}
+.arcov .row2{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.arcov button{min-height:48px;padding:10px 14px}
+.arcov .ghost{background:#2a2a4a!important;border-color:#fff!important}
+@media(max-width:600px){.wcc{padding:14px}.wcc b{font-size:13px}.wcc span{font-size:9px}.wcc i{font-size:9px}}
 .weekend{background:#111;color:#ffd400;text-align:center;font-weight:800;padding:10px}
 </style>
 </head>
@@ -520,7 +526,7 @@ let G=null,keys={l:false,r:false},raf=0;
 function ov(html){$('arcov').innerHTML=html;$('arcov').hidden=!html}
 function startScreen(){ov(`<h3>BEN-JUMP</h3><div>HIGHSCORE ${(S.scores[0]||{}).s||0}</div><div class="blink">INSERT COIN</div><button id="gstart">START</button><div style="font-size:9px;color:#fff">← → / A D / TIPPEN</div>`);$('gstart').onclick=newGame;drawBg();}
 function plat(y,lvl){const r=Math.random(),t=lvl>800&&r<.18?'b':lvl>300&&r<.38?'m':'n';return{x:Math.random()*(W-64),y,w:64,h:12,t,vx:t==='m'?(Math.random()<.5?-1:1)*(1+Math.min(2,lvl/2500)):0,k:Math.random()<.08?((r2=>r2<.18?'f':r2<.38?'g':r2<.58?'K':'c')(Math.random())):false,gone:false}}
-function newGame(){ov('');try{$('arc').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}cv.classList.remove('trip');cancelAnimationFrame(raf);
+function newGame(){autoFs('arc');ov('');try{$('arc').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}cv.classList.remove('trip');cancelAnimationFrame(raf);
   G={p:{x:W/2-14,y:H-140,w:28,h:76,vx:0,vy:-11},pl:[],en:[],score:0,top:H,over:false,last:performance.now()};
   G.pl.push({x:W/2-40,y:H-40,w:80,h:12,t:'n',vx:0,k:false,gone:false});
   let y=H-40;while(y>-H){y-=55+Math.random()*30;G.pl.push(plat(y,0))}
@@ -562,14 +568,14 @@ function draw(){drawBg();
 function gameOver(why){vib([120,60,220]);G.over=true;cv.classList.remove('trip');cancelAnimationFrame(raf);fanfare(true);const sc=G.score,l=S.scores||[];
   const q=sc>0&&(l.length<10||sc>l[l.length-1].s);
   let last='';try{last=localStorage.getItem('wm-ini')||''}catch(e){}
-  ov(`<h3>GAME OVER</h3><div>${esc(why)}</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>DEIN NAME</div><input id="ini" maxlength="12" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="isave">EINTRAGEN</button>`:`<div style="color:#fff;font-size:10px">${pick(['BEN IST ENTTÄUSCHT.','DAS WAR NIX.','DIE ARBEIT LACHT DICH AUS.','NOCHMAL, ABER DIESMAL GUT.'])}</div><button id="gagain">NOCHMAL</button>`));
-  if(q){const i=$('ini');setTimeout(()=>i.focus(),50);const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,12).toUpperCase();if(!n){i.focus();return}
+  ov(`<h3>GAME OVER</h3><div>${esc(why)}</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>DEIN NAME</div><input id="ini" maxlength="12" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><div class="row2"><button id="isave">EINTRAGEN</button><button id="gagain" class="ghost">NOCHMAL</button></div>`:`<div style="color:#fff;font-size:10px">${pick(['BEN IST ENTTÄUSCHT.','DAS WAR NIX.','DIE ARBEIT LACHT DICH AUS.','NOCHMAL, ABER DIESMAL GUT.'])}</div><button id="gagain">NOCHMAL</button>`));
+  if(q){const i=$('ini');const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,12).toUpperCase();if(!n){i.focus();return}
       try{localStorage.setItem('wm-ini',n)}catch(e){}const top=!l.length||sc>l[0].s;
       S.scores=[...l,{n,s:sc,at:Date.now()}].sort((a,b)=>b.s-a.s).slice(0,10);save();
       if(top){confetti();fanfare(false);toast(n+' IST DIE NEUE NUMMER 1!')}
       ov(`<h3>EINGETRAGEN</h3><div>PLATZ ${S.scores.findIndex(x=>x.n===n&&x.s===sc)+1}</div><button id="gagain">NOCHMAL</button>`);$('gagain').onclick=newGame};
     $('isave').onclick=sv;i.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')sv()})}
-  else $('gagain').onclick=newGame}
+  $('gagain').onclick=newGame}
 addEventListener('keydown',e=>{if(location.hash!=='#arcade'||/input/i.test(document.activeElement.tagName))return;
   if(['ArrowLeft','a','A'].includes(e.key)){keys.l=true;e.preventDefault()}if(['ArrowRight','d','D'].includes(e.key)){keys.r=true;e.preventDefault()}
   if((e.key===' '||e.key==='Enter')&&(!G||G.over)&&$('gstart')){e.preventDefault();newGame()}});
@@ -586,7 +592,7 @@ const DRUG=[['SHOTS','🥃'],['KIPPEN','🚬'],['WODKA','🍾'],['AFTERHOUR','�
 let F=null,raf2=0;
 function ov2(h){$('fov').innerHTML=h;$('fov').hidden=!h}
 function fStart(){ov2(`<h3>JARNO-FLAP</h3><div>HIGHSCORE ${(S.scores2[0]||{}).s||0}</div><div class="blink">INSERT COIN</div><button id="fgo">START</button><div style="font-size:9px;color:#fff">TIPPEN / KLICK / LEERTASTE</div>`);$('fgo').onclick=fNew;fBg(0)}
-function fNew(){ov2('');try{$('arc2').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}cancelAnimationFrame(raf2);F={b:{x:80,y:220,vy:0},p:[],e:[],t:0,score:0,over:false,last:performance.now(),next:40,off:0};raf2=requestAnimationFrame(fLoop)}
+function fNew(){autoFs('arc2');ov2('');try{$('arc2').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}cancelAnimationFrame(raf2);F={b:{x:80,y:220,vy:0},p:[],e:[],t:0,score:0,over:false,last:performance.now(),next:40,off:0};raf2=requestAnimationFrame(fLoop)}
 function flap(){if(!F||F.over)return;vib(8);F.b.vy=-7.4;beep(620,.05,'square',.04)}
 function fLoop(t){const dt=Math.min(2,(t-F.last)/16.67);F.last=t;fStep(dt);fDraw();if(!F.over)raf2=requestAnimationFrame(fLoop)}
 function fStep(dt){const b=F.b,sp=2.4+Math.min(1.6,F.score*.06);F.t+=dt;F.off+=sp*dt;
@@ -620,14 +626,14 @@ function fDraw(){fBg(F.off);
   if(t3&&performance.now()-t3T<1300){c2.fillStyle='#fff';c2.font='11px "Press Start 2P",monospace';c2.fillText(t3,180,84)}}
 function fOver(why){vib([120,60,220]);F.over=true;cancelAnimationFrame(raf2);fanfare(true);const sc=F.score,l=S.scores2||[];const q=sc>0&&(l.length<10||sc>l[l.length-1].s);
   let last='';try{last=localStorage.getItem('wm-ini')||''}catch(e){}
-  ov2(`<h3>GAME OVER</h3><div>${esc(why)}</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>DEIN NAME</div><input id="fini" maxlength="12" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="fsave">EINTRAGEN</button>`:`<div style="color:#fff;font-size:10px">${pick(['RÜCKFALL.','DAS LEBEN IST HART.','NÄCHSTES MAL STÄRKER BLEIBEN.','DER KARDIOLOGE SCHÜTTELT DEN KOPF.'])}</div><button id="fagain">NOCHMAL</button>`));
-  if(q){const i=$('fini');setTimeout(()=>i.focus(),50);const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,12).toUpperCase();if(!n){i.focus();return}
+  ov2(`<h3>GAME OVER</h3><div>${esc(why)}</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>DEIN NAME</div><input id="fini" maxlength="12" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><div class="row2"><button id="fsave">EINTRAGEN</button><button id="fagain" class="ghost">NOCHMAL</button></div>`:`<div style="color:#fff;font-size:10px">${pick(['RÜCKFALL.','DAS LEBEN IST HART.','NÄCHSTES MAL STÄRKER BLEIBEN.','DER KARDIOLOGE SCHÜTTELT DEN KOPF.'])}</div><button id="fagain">NOCHMAL</button>`));
+  if(q){const i=$('fini');const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,12).toUpperCase();if(!n){i.focus();return}
       try{localStorage.setItem('wm-ini',n)}catch(e){}const top=!l.length||sc>l[0].s;
       S.scores2=[...l,{n,s:sc,at:Date.now()}].sort((a,b)=>b.s-a.s).slice(0,10);save();
       if(top){confetti();fanfare(false);toast(n+' IST DIE NEUE NUMMER 1!')}
       ov2(`<h3>EINGETRAGEN</h3><div>PLATZ ${S.scores2.findIndex(x=>x.n===n&&x.s===sc)+1}</div><button id="fagain">NOCHMAL</button>`);$('fagain').onclick=fNew};
     $('fsave').onclick=sv;i.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')sv()})}
-  else $('fagain').onclick=fNew}
+  $('fagain').onclick=fNew}
 $('arc2').addEventListener('pointerdown',e=>{if(e.target.closest('button,input'))return;e.preventDefault();flap()});
 addEventListener('keydown',e=>{if(location.hash!=='#flap'||/input/i.test(document.activeElement.tagName))return;if(e.key===' '||e.key==='ArrowUp'||e.key==='w'){e.preventDefault();if(!F||F.over){if($('fgo'))fNew()}else flap()}});
 addEventListener('hashchange',()=>{if(location.hash!=='#flap'&&F&&!F.over){F.over=true;cancelAnimationFrame(raf2)}if(location.hash==='#flap'&&(!F||F.over))fStart()});
@@ -649,7 +655,7 @@ function lvlBuild(n){const b=[],boss=n===2||n%3===2,towers=Math.min(3,1+Math.flo
     if(Math.random()<.6)b.push({x:x0+16,y:y-30,w:32,h:30,t:'g',...tg()})}
   if(boss)b.push({x:AW-62,y:GY-56,w:50,h:56,t:'g',boss:true,hp:2+Math.floor(n/6),label:'OLI',em:''});
   b.forEach(o=>{o.vx=0;o.vy=0;o.awake=false;o.dead=false});return b}
-function aNew(){ov3('');try{$('arc3').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}A={lvl:1,score:0,shots:5,b:lvlBuild(1),p:null,drag:null,state:'aim',t:0,msg:'LEVEL 1',msgT:performance.now(),last:performance.now()};cancelAnimationFrame(raf3);raf3=requestAnimationFrame(aLoop)}
+function aNew(){autoFs('arc3');ov3('');try{$('arc3').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}A={lvl:1,score:0,shots:5,b:lvlBuild(1),p:null,drag:null,state:'aim',t:0,msg:'LEVEL 1',msgT:performance.now(),last:performance.now()};cancelAnimationFrame(raf3);raf3=requestAnimationFrame(aLoop)}
 function aLoop(t){const dt=Math.min(2,(t-A.last)/16.67);A.last=t;for(let i=0;i<2;i++)aStep(dt/2);aDraw();if(A.state!=='over')raf3=requestAnimationFrame(aLoop)}
 function kill(o){if(o.dead)return;vib(o.boss?[60,40,60]:25);if(o.boss){const n=performance.now();if(o.inv&&n<o.inv)return;if(--o.hp>0){o.inv=n+600;A.msg=pick(['OLI WACKELT!','OLI IST SAUER!','NOCHMAL DRAUF!']);A.msgT=n;beep(120,.25,'sawtooth',.08);return}o.dead=true;A.score+=5000;A.msg='OLI BESIEGT! +5000';A.msgT=n;confetti();fanfare(false);return}o.dead=true;if(o.t==='g'){A.score+=1000;beep(300,.15,'sawtooth',.06);A.pop=[o.x+o.w/2,o.y,performance.now(),o.label]}else A.score+=50}
 function wakeAll(){A.b.forEach(o=>o.awake=true)}
@@ -705,18 +711,19 @@ function aDraw(){const g=c3.createLinearGradient(0,0,0,AH);g.addColorStop(0,'#5e
     if(A.msg&&performance.now()-A.msgT<1400){c3.textAlign='center';c3.font='14px "Press Start 2P",monospace';c3.fillStyle='#fff';c3.fillText(A.msg,AW/2+2,AH/2-58);c3.fillStyle='#e4002b';c3.fillText(A.msg,AW/2,AH/2-60)}}}
 function aOver(){vib([120,60,220]);A.state='over';cancelAnimationFrame(raf3);aDraw();fanfare(true);const sc=A.score,l=S.scores3||[];const q=sc>0&&(l.length<10||sc>l[l.length-1].s);
   let last='';try{last=localStorage.getItem('wm-ini')||''}catch(e){}
-  ov3(`<h3>GAME OVER</h3><div>LEVEL ${A.lvl} · KEINE SCHÜSSE MEHR</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>DEIN NAME</div><input id="aini" maxlength="12" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="asave">EINTRAGEN</button>`:`<div style="color:#fff;font-size:10px">${pick(['SCHIMPFKÄSE IST ENTTÄUSCHT.','DER MONTAG HAT GEWONNEN.','EXCEL LACHT DICH AUS.'])}</div><button id="aagain">NOCHMAL</button>`));
-  if(q){const i=$('aini');setTimeout(()=>i.focus(),50);const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,12).toUpperCase();if(!n){i.focus();return}
+  ov3(`<h3>GAME OVER</h3><div>LEVEL ${A.lvl} · KEINE SCHÜSSE MEHR</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>DEIN NAME</div><input id="aini" maxlength="12" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><div class="row2"><button id="asave">EINTRAGEN</button><button id="aagain" class="ghost">NOCHMAL</button></div>`:`<div style="color:#fff;font-size:10px">${pick(['SCHIMPFKÄSE IST ENTTÄUSCHT.','DER MONTAG HAT GEWONNEN.','EXCEL LACHT DICH AUS.'])}</div><button id="aagain">NOCHMAL</button>`));
+  if(q){const i=$('aini');const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,12).toUpperCase();if(!n){i.focus();return}
       try{localStorage.setItem('wm-ini',n)}catch(e){}const top=!l.length||sc>l[0].s;
       S.scores3=[...l,{n,s:sc,at:Date.now()}].sort((a,b)=>b.s-a.s).slice(0,10);save();
       if(top){confetti();fanfare(false);toast(n+' IST DIE NEUE NUMMER 1!')}
       ov3(`<h3>EINGETRAGEN</h3><div>PLATZ ${S.scores3.findIndex(x=>x.n===n&&x.s===sc)+1}</div><button id="aagain">NOCHMAL</button>`);$('aagain').onclick=aNew};
     $('asave').onclick=sv;i.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')sv()})}
-  else $('aagain').onclick=aNew}
+  $('aagain').onclick=aNew}
 addEventListener('hashchange',()=>{if(location.hash!=='#angry'&&A&&A.state!=='over'){A.state='over';cancelAnimationFrame(raf3)}if(location.hash==='#angry'&&(!A||A.state==='over'))aStart()});
 if(location.hash==='#angry')aStart();else ov3('');
 
 /* ---------- Vollbild + Vibration ---------- */
+function autoFs(id){try{const el=$(id);if(matchMedia('(pointer:coarse)').matches&&innerWidth<820&&!el.classList.contains('fs'))setFs(el,true)}catch(e){}}
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
 function setFs(el,on){el.classList.toggle('fs',on);document.body.classList.toggle('fsmode',on);const b=el.querySelector('.fsb');b.textContent=on?'✕':'⛶';b.setAttribute('aria-label',on?'Vollbild beenden':'Vollbild');
   try{if(on&&el.requestFullscreen&&!document.fullscreenElement)el.requestFullscreen({navigationUI:'hide'}).catch(()=>{});else if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}
