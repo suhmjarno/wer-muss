@@ -100,11 +100,11 @@ body.chef #rot{filter:hue-rotate(0);animation:hue 1s linear infinite}@keyframes 
 .arcov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;color:#ffd400;font-family:"Press Start 2P",monospace;font-size:13px;line-height:1.6;background:rgba(11,11,42,.82);padding:18px}
 .arcov h3{font-family:"Press Start 2P",monospace;font-size:20px;margin:0;color:#ff3b5c;text-shadow:3px 3px 0 #1f4fff}
 .arcov button{font-family:"Press Start 2P",monospace;font-size:13px;background:#e4002b;color:#fff;border:3px solid #ffd400;border-radius:8px}
-.arcov input{font-family:"Press Start 2P",monospace;font-size:28px;width:5.2em;text-align:center;text-transform:uppercase;letter-spacing:.3em;background:#000;color:#ffd400;border:3px solid #ffd400;border-radius:8px;padding:8px}
+.arcov input{font-family:"Press Start 2P",monospace;font-size:14px;width:100%;max-width:260px;text-align:center;text-transform:uppercase;letter-spacing:.1em;background:#000;color:#ffd400;border:3px solid #ffd400;border-radius:8px;padding:8px}
 .arc canvas.trip{animation:trip .7s linear infinite}@keyframes trip{0%{filter:hue-rotate(0) saturate(2)}50%{filter:hue-rotate(180deg) saturate(3)}100%{filter:hue-rotate(360deg) saturate(2)}}
 .blink{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}
 .hs{list-style:none;margin:0 auto;padding:16px;max-width:380px;background:#000;border:6px solid #111;border-radius:16px;font-family:"Press Start 2P",monospace;font-size:13px;color:#ffd400}
-.hs li{display:grid;grid-template-columns:3.5em 1fr auto;gap:8px;padding:6px 0}.hs li:nth-child(1){color:#ff3b5c}.hs li:nth-child(2){color:#4fd1ff}.hs li:nth-child(3){color:#7CFC00}
+.hs li{display:grid;grid-template-columns:3.5em minmax(0,1fr) auto;gap:8px;padding:6px 0;font-size:12px}.hs li span:nth-child(2){overflow-wrap:anywhere}.hs li:nth-child(1){color:#ff3b5c}.hs li:nth-child(2){color:#4fd1ff}.hs li:nth-child(3){color:#7CFC00}
 .weekend{background:#111;color:#ffd400;text-align:center;font-weight:800;padding:10px}
 </style>
 </head>
@@ -289,7 +289,7 @@ function clean(d){const o={...S};
   if(d.tab==='free'||d.tab==='people')o.tab=d.tab;
   if(d.free&&Array.isArray(d.free.items))o.free={title:String(d.free.title||'').slice(0,50),items:d.free.items.map(x=>String(x).slice(0,24)).slice(0,16)};
   if(Array.isArray(d.history))o.history=d.history.filter(h=>h&&typeof h.w==='string'&&typeof h.at==='number').map(h=>({k:h.k==='p'?'p':'f',t:String(h.t||'').slice(0,60),w:h.w.slice(0,24),at:h.at})).slice(0,25);
-  if(Array.isArray(d.scores))o.scores=d.scores.filter(x=>x&&typeof x.n==='string'&&typeof x.s==='number').map(x=>({n:x.n.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,3).toUpperCase()||'???',s:Math.max(0,Math.floor(x.s)),at:+x.at||0})).sort((a,b)=>b.s-a.s).slice(0,10);
+  if(Array.isArray(d.scores))o.scores=d.scores.filter(x=>x&&typeof x.n==='string'&&typeof x.s==='number').map(x=>({n:x.n.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,12).toUpperCase()||'???',s:Math.max(0,Math.floor(x.s)),at:+x.at||0})).sort((a,b)=>b.s-a.s).slice(0,10);
   const sp=d.spin;o.spin=sp&&Array.isArray(sp.items)&&typeof sp.win==='string'&&typeof sp.stop==='number'&&typeof sp.at==='number'?{id:String(sp.id),kind:sp.kind==='p'?'p':'f',items:sp.items.map(x=>String(x).slice(0,24)).slice(0,20),idx:sp.idx|0,win:sp.win.slice(0,24),stop:sp.stop,task:String(sp.task||'').slice(0,60),at:sp.at,roast:String(sp.roast||'').slice(0,140),title:String(sp.title||'').slice(0,140),fake:!!sp.fake,appeal:sp.appeal==='denied'?'denied':null}:null;return o}
 (async()=>{
   setLive('Verbinde …');
@@ -521,8 +521,8 @@ function draw(){drawBg();
 function gameOver(why){G.over=true;cv.classList.remove('trip');cancelAnimationFrame(raf);fanfare(true);const sc=G.score,l=S.scores||[];
   const q=sc>0&&(l.length<10||sc>l[l.length-1].s);
   let last='';try{last=localStorage.getItem('wm-ini')||''}catch(e){}
-  ov(`<h3>GAME OVER</h3><div>${esc(why)}</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>INITIALEN</div><input id="ini" maxlength="3" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="isave">EINTRAGEN</button>`:`<div style="color:#fff;font-size:10px">${pick(['BEN IST ENTTÄUSCHT.','DAS WAR NIX.','DIE ARBEIT LACHT DICH AUS.','NOCHMAL, ABER DIESMAL GUT.'])}</div><button id="gagain">NOCHMAL</button>`));
-  if(q){const i=$('ini');setTimeout(()=>i.focus(),50);const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,3).toUpperCase();if(!n){i.focus();return}
+  ov(`<h3>GAME OVER</h3><div>${esc(why)}</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>DEIN NAME</div><input id="ini" maxlength="12" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="isave">EINTRAGEN</button>`:`<div style="color:#fff;font-size:10px">${pick(['BEN IST ENTTÄUSCHT.','DAS WAR NIX.','DIE ARBEIT LACHT DICH AUS.','NOCHMAL, ABER DIESMAL GUT.'])}</div><button id="gagain">NOCHMAL</button>`));
+  if(q){const i=$('ini');setTimeout(()=>i.focus(),50);const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,12).toUpperCase();if(!n){i.focus();return}
       try{localStorage.setItem('wm-ini',n)}catch(e){}const top=!l.length||sc>l[0].s;
       S.scores=[...l,{n,s:sc,at:Date.now()}].sort((a,b)=>b.s-a.s).slice(0,10);save();
       if(top){confetti();fanfare(false);toast(n+' IST DIE NEUE NUMMER 1!')}
