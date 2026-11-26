@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wer muss?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Press+Start+2P&family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: TV-Spielshow am Montagmorgen – laut, bierernst, komplett albern
    IDEA: das Glücksrad einer Samstagabend-Show, aufgebaut im Großraumbüro
@@ -95,6 +95,15 @@ nav.tabsnav a.on{background:var(--ink);color:var(--card)}
 body.chef *{font-family:"Comic Sans MS","Comic Sans",cursive!important}
 body.chef #rot{filter:hue-rotate(0);animation:hue 1s linear infinite}@keyframes hue{to{filter:hue-rotate(360deg)}}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#ffd400;font-weight:800;padding:12px 18px;border-radius:14px;z-index:30;max-width:90vw;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.3)}
+.arc{position:relative;max-width:380px;margin:0 auto;border:6px solid #111;border-radius:16px;overflow:hidden;background:#0b0b2a;touch-action:none;box-shadow:0 8px 0 rgba(0,0,0,.3)}
+.arc canvas{display:block;width:100%;height:auto}
+.arcov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;color:#ffd400;font-family:"Press Start 2P",monospace;font-size:13px;line-height:1.6;background:rgba(11,11,42,.82);padding:18px}
+.arcov h3{font-family:"Press Start 2P",monospace;font-size:20px;margin:0;color:#ff3b5c;text-shadow:3px 3px 0 #1f4fff}
+.arcov button{font-family:"Press Start 2P",monospace;font-size:13px;background:#e4002b;color:#fff;border:3px solid #ffd400;border-radius:8px}
+.arcov input{font-family:"Press Start 2P",monospace;font-size:28px;width:5.2em;text-align:center;text-transform:uppercase;letter-spacing:.3em;background:#000;color:#ffd400;border:3px solid #ffd400;border-radius:8px;padding:8px}
+.blink{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}
+.hs{list-style:none;margin:0 auto;padding:16px;max-width:380px;background:#000;border:6px solid #111;border-radius:16px;font-family:"Press Start 2P",monospace;font-size:13px;color:#ffd400}
+.hs li{display:grid;grid-template-columns:3.5em 1fr auto;gap:8px;padding:6px 0}.hs li:nth-child(1){color:#ff3b5c}.hs li:nth-child(2){color:#4fd1ff}.hs li:nth-child(3){color:#7CFC00}
 .weekend{background:#111;color:#ffd400;text-align:center;font-weight:800;padding:10px}
 </style>
 </head>
@@ -122,7 +131,7 @@ body.chef #rot{filter:hue-rotate(0);animation:hue 1s linear infinite}@keyframes 
 
 <div class="weekend" id="weekend" hidden>Freitag ab 14 Uhr: Offiziell muss keiner mehr irgendwas. Das Rad dreht trotzdem.</div>
 <nav class="tabsnav" id="nav">
-  <a href="#rad">Glücksrad</a><a href="#orakel">Büro-Orakel</a><a href="#bingo">Meeting-Bingo</a><a href="#urkunde">Urkunde</a><a href="#luegen">Lügendetektor</a>
+  <a href="#rad">Glücksrad</a><a href="#orakel">Büro-Orakel</a><a href="#bingo">Meeting-Bingo</a><a href="#urkunde">Urkunde</a><a href="#luegen">Lügendetektor</a><a href="#arcade">Ben-Jump</a>
 </nav>
 <div id="v-rad">
 <main class="band">
@@ -223,6 +232,13 @@ body.chef #rot{filter:hue-rotate(0);animation:hue 1s linear infinite}@keyframes 
   <div class="lie" id="lie" role="button" tabindex="0">Halten</div>
   <p class="hint" style="text-align:center" id="lieTxt"></p>
 </section>
+<section class="band view" id="v-arcade" hidden>
+  <h2>Ben-Jump</h2>
+  <p class="sub">Ben drückt sich vor der Arbeit – hilf ihm dabei. Steuern: Pfeiltasten / A-D oder linke/rechte Hälfte antippen. Weich Arbeit, Abmahnungen und Rückenschmerzen aus (draufspringen geht auch). Kaffee = Turbo, Feierabend-Uhr = Mega-Turbo, Groove-Banger = Ultra-Turbo.</p>
+  <div class="arc" id="arc"><canvas id="cv" width="360" height="540"></canvas><div class="arcov" id="arcov"></div></div>
+  <h2 style="margin-top:22px;text-align:center">Hall of Fame</h2>
+  <ol class="hs" id="hs"></ol>
+</section>
 <footer>Kein Rechtsweg. Kein Einspruch. Okay, ein Einspruch.</footer>
 
 <script>
@@ -241,7 +257,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 
-let S={people:DEF_PEOPLE,immune:[],task:'Kaffee holen',mode:'fair',tab:'people',free:{title:'Was essen wir heute?',items:FPRE['Mittagessen']},history:[],spin:null};
+let S={people:DEF_PEOPLE,immune:[],task:'Kaffee holen',mode:'fair',tab:'people',free:{title:'Was essen wir heute?',items:FPRE['Mittagessen']},history:[],spin:null,scores:[]};
 const TOPIC='wermuss-848d27962e77f4be15eb',NTFY='https://ntfy.sh/'+TOPIC,ME=Math.random().toString(36).slice(2,10);
 let lastSpinId=null,curDeg=0,spinning=false,ts=0,online=false;
 
@@ -272,6 +288,7 @@ function clean(d){const o={...S};
   if(d.tab==='free'||d.tab==='people')o.tab=d.tab;
   if(d.free&&Array.isArray(d.free.items))o.free={title:String(d.free.title||'').slice(0,50),items:d.free.items.map(x=>String(x).slice(0,24)).slice(0,16)};
   if(Array.isArray(d.history))o.history=d.history.filter(h=>h&&typeof h.w==='string'&&typeof h.at==='number').map(h=>({k:h.k==='p'?'p':'f',t:String(h.t||'').slice(0,60),w:h.w.slice(0,24),at:h.at})).slice(0,25);
+  if(Array.isArray(d.scores))o.scores=d.scores.filter(x=>x&&typeof x.n==='string'&&typeof x.s==='number').map(x=>({n:x.n.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,3).toUpperCase()||'???',s:Math.max(0,Math.floor(x.s)),at:+x.at||0})).sort((a,b)=>b.s-a.s).slice(0,10);
   const sp=d.spin;o.spin=sp&&Array.isArray(sp.items)&&typeof sp.win==='string'&&typeof sp.stop==='number'&&typeof sp.at==='number'?{id:String(sp.id),kind:sp.kind==='p'?'p':'f',items:sp.items.map(x=>String(x).slice(0,24)).slice(0,20),idx:sp.idx|0,win:sp.win.slice(0,24),stop:sp.stop,task:String(sp.task||'').slice(0,60),at:sp.at,roast:String(sp.roast||'').slice(0,140),title:String(sp.title||'').slice(0,140),fake:!!sp.fake,appeal:sp.appeal==='denied'?'denied':null}:null;return o}
 (async()=>{
   setLive('Verbinde …');
@@ -381,6 +398,7 @@ function render(){
   const rank=Object.entries(cnt).sort((a,b)=>b[1]-a[1]),max=rank[0]?rank[0][1]:1;
   $('crown').innerHTML=rank[0]?`Büro-Opfer des Monats: <b>${esc(rank[0][0])}</b>. Applaus, bitte.`:'';$('crown').className=rank[0]?'crown':'';
   $('bars').innerHTML=rank.map(([n,c])=>`<div class="bar"><span>${esc(n)}</span><i style="width:${c/max*100}%"></i><b>${c}</b></div>`).join('')||'<p class="hint">Noch blütenweiße Weste. Für alle.</p>';
+  renderHS();
   $('hist').innerHTML=S.history.slice(0,8).map(h=>`<li><b>${esc(h.w)}</b> – ${esc(h.t)}<small>${new Date(h.at).toLocaleString('de-DE',{weekday:'short',hour:'2-digit',minute:'2-digit'})}</small></li>`).join('')||'<li class="hint">Noch nichts passiert.</li>';
 }
 
@@ -404,7 +422,7 @@ $('exBtn').onclick=()=>{$('excuse').textContent=EX.map(pick).join('')};
 $('exCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('excuse').textContent);$('exCopy').textContent='Kopiert!'}catch(e){$('exCopy').textContent='Ging nicht – markier\'s halt'}setTimeout(()=>$('exCopy').textContent='Kopieren',1500)};
 
 /* ---------- Seiten ---------- */
-const VIEWS=['rad','orakel','bingo','urkunde','luegen'];
+const VIEWS=['rad','orakel','bingo','urkunde','luegen','arcade'];
 function route(){const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):'rad';
   VIEWS.forEach(x=>$('v-'+x).hidden=x!==v);[...$('nav').children].forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+v));
   if(v==='urkunde')$('uname').innerHTML=S.people.map(p=>`<option>${esc(p.n)}</option>`).join('')}
@@ -450,7 +468,75 @@ let spins=[];$('spin').addEventListener('click',()=>{const n=Date.now();spins=sp
 const _add=$('addP').onsubmit;$('addP').onsubmit=e=>{if(/^oli(ver)?$/i.test($('newP').value.trim())){e.preventDefault();$('newP').value='';toast('Oli muss nie. Oli ist Chef. Netter Versuch.');return}_add(e)};
 // Konsole
 try{console.log('%cWer das liest, muss Kaffee holen.','font:bold 20px sans-serif;color:#e4002b')}catch(e){}
-bingo();route();
+
+/* ---------- Ben-Jump ---------- */
+const ORD=['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH','10TH'];
+function renderHS(){const l=S.scores||[];$('hs').innerHTML=l.length?l.map((x,i)=>`<li><span>${ORD[i]}</span><span>${esc(x.n)}</span><span>${x.s}</span></li>`).join(''):'<li><span></span><span class="blink">NOCH KEINE SCORES</span><span></span></li>'}
+const cv=$('cv'),cx=cv.getContext('2d'),W=360,H=540,BEN=new Image();
+try{const m=getComputedStyle(document.body).cursor.match(/url\("?(data:image\/png;base64,[^")]+)/);if(m)BEN.src=m[1]}catch(e){}
+let G=null,keys={l:false,r:false},raf=0;
+function ov(html){$('arcov').innerHTML=html;$('arcov').hidden=!html}
+function startScreen(){ov(`<h3>BEN-JUMP</h3><div>HIGHSCORE ${(S.scores[0]||{}).s||0}</div><div class="blink">INSERT COIN</div><button id="gstart">START</button><div style="font-size:9px;color:#fff">← → / A D / TIPPEN</div>`);$('gstart').onclick=newGame;drawBg();}
+function plat(y,lvl){const r=Math.random(),t=lvl>800&&r<.18?'b':lvl>300&&r<.38?'m':'n';return{x:Math.random()*(W-64),y,w:64,h:12,t,vx:t==='m'?(Math.random()<.5?-1:1)*(1+Math.min(2,lvl/2500)):0,k:Math.random()<.08?((r2=>r2<.2?'f':r2<.45?'g':'c')(Math.random())):false,gone:false}}
+function newGame(){ov('');cancelAnimationFrame(raf);
+  G={p:{x:W/2-14,y:H-140,w:28,h:76,vx:0,vy:-11},pl:[],en:[],score:0,top:H,over:false,last:performance.now()};
+  G.pl.push({x:W/2-40,y:H-40,w:80,h:12,t:'n',vx:0,k:false,gone:false});
+  let y=H-40;while(y>-H){y-=55+Math.random()*30;G.pl.push(plat(y,0))}
+  raf=requestAnimationFrame(loop)}
+function loop(t){const dt=Math.min(2,(t-G.last)/16.67);G.last=t;step(dt);draw();if(!G.over)raf=requestAnimationFrame(loop)}
+function step(dt){const p=G.p,lvl=G.score;
+  p.vx=(keys.l?-5.2:0)+(keys.r?5.2:0);p.x+=p.vx*dt;if(p.x>W)p.x=-p.w;if(p.x<-p.w)p.x=W;
+  p.vy+=.38*dt;p.y+=p.vy*dt;
+  for(const q of G.pl){if(q.t==='m'){q.x+=q.vx*dt;if(q.x<0||q.x>W-q.w)q.vx*=-1}
+    if(!q.gone&&p.vy>0&&p.x+p.w*.8>q.x&&p.x+p.w*.2<q.x+q.w&&p.y+p.h>=q.y&&p.y+p.h-p.vy*dt<=q.y+4){
+      if(q.t==='b'){q.gone=true;beep(180,.12,'sawtooth',.05);continue}
+      p.vy=q.k==='g'?-32:q.k==='f'?-27:q.k?-19:-11;if(q.k){toast2(q.k==='g'?'GROOVE-BANGER!!!':q.k==='f'?'FEIERABEND! TSCHÜSS!':'KAFFEE-TURBO!');if(q.k==='g')[392,523,659,784,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.12,'square',.06),i*90));q.k=false;beep(880,.25,'square',.06)}else beep(520,.05,'square',.04)}}
+  for(const e of G.en){e.x+=e.vx*dt;if(e.x<0||e.x>W-e.w)e.vx*=-1;
+    if(!e.dead&&p.x+p.w>e.x+4&&p.x<e.x+e.w-4&&p.y+p.h>e.y&&p.y<e.y+e.h){
+      if(p.vy>0&&p.y+p.h-e.y<18){e.dead=true;p.vy=-13;G.score+=500;beep(1200,.2,'square',.07);toast2(e.k==='a'?'ABMAHNUNG ZERRISSEN +500':e.k==='r'?'RÜCKEN EINGERENKT +500':'ARBEIT VERMIEDEN +500')}
+      else return gameOver(e.k==='a'?'ABGEMAHNT!':e.k==='r'?'RÜCKEN IST DURCH':'ARBEIT HAT DICH ERWISCHT')}}
+  if(p.y<H*.38){const d=H*.38-p.y;p.y=H*.38;G.score+=Math.round(d);
+    G.pl.forEach(q=>q.y+=d);G.en.forEach(e=>e.y+=d);
+    G.pl=G.pl.filter(q=>q.y<H+20);G.en=G.en.filter(e=>e.y<H+40&&!e.dead);
+    let top=Math.min(...G.pl.map(q=>q.y));const gap=Math.min(115,55+lvl/90);
+    while(top>-40){top-=gap*.6+Math.random()*gap*.6;G.pl.push(plat(top,lvl))}
+    if(lvl>1200&&Math.random()<.004*d&&G.en.length<2){const r=Math.random(),k=r<.34?'a':r<.67?'w':'r',sz={a:[40,48,2.2],w:[62,34,1.3],r:[56,36,1.8]}[k];G.en.push({k,x:Math.random()*(W-sz[0]),y:-50,w:sz[0],h:sz[1],vx:(Math.random()<.5?-1:1)*sz[2],dead:false})}}
+  if(p.y>H)gameOver('ABGESTÜRZT')}
+let tmsg='',tmsgT=0;function toast2(t){tmsg=t;tmsgT=performance.now()}
+function drawBg(){cx.fillStyle='#0b0b2a';cx.fillRect(0,0,W,H);cx.strokeStyle='rgba(79,209,255,.12)';cx.lineWidth=1;const off=G?G.score%30:0;
+  for(let y=off;y<H;y+=30){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke()}for(let x=0;x<W;x+=30){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,H);cx.stroke()}}
+function draw(){drawBg();
+  for(const q of G.pl){if(q.gone)continue;cx.fillStyle=q.t==='m'?'#4fd1ff':q.t==='b'?'#a0522d':'#7CFC00';cx.fillRect(q.x,q.y,q.w,q.h);cx.fillStyle='rgba(0,0,0,.35)';cx.fillRect(q.x,q.y+q.h-4,q.w,4);
+    if(q.t==='b'){cx.strokeStyle='#000';cx.beginPath();cx.moveTo(q.x+q.w/2,q.y);cx.lineTo(q.x+q.w/2-6,q.y+q.h);cx.stroke()}
+    if(q.k==='c'){cx.fillStyle='#fff';cx.fillRect(q.x+q.w/2-7,q.y-14,14,13);cx.fillStyle='#6b3e1f';cx.fillRect(q.x+q.w/2-5,q.y-12,10,5);cx.strokeStyle='#fff';cx.lineWidth=2;cx.strokeRect(q.x+q.w/2+7,q.y-11,4,6);cx.lineWidth=1}
+    if(q.k==='g'){const c=q.x+q.w/2,b=Math.sin(performance.now()/120)*2;cx.fillStyle='#ff3bd4';cx.fillRect(c-12,q.y-24+b,24,22);cx.fillStyle='#111';cx.beginPath();cx.arc(c,q.y-13+b,7,0,7);cx.fill();cx.fillStyle='#ffd400';cx.beginPath();cx.arc(c,q.y-13+b,3,0,7);cx.fill()}
+    if(q.k==='f'){const c=q.x+q.w/2;cx.fillStyle='#ffd400';cx.beginPath();cx.arc(c,q.y-11,10,0,7);cx.fill();cx.strokeStyle='#111';cx.lineWidth=2;cx.beginPath();cx.moveTo(c,q.y-11);cx.lineTo(c,q.y-18);cx.moveTo(c,q.y-11);cx.lineTo(c+6,q.y-11);cx.stroke();cx.lineWidth=1}}
+  for(const e of G.en){cx.textAlign='center';if(e.k==='r'){const j=Math.sin(performance.now()/60)*2;cx.fillStyle='#ff5fa2';cx.fillRect(e.x+j,e.y,e.w,e.h);cx.strokeStyle='#111';cx.lineWidth=3;cx.beginPath();for(let i=0;i<=6;i++)cx.lineTo(e.x+j+6+i*(e.w-12)/6,e.y+8+(i%2?10:0));cx.stroke();cx.lineWidth=1;cx.fillStyle='#111';cx.font='7px "Press Start 2P",monospace';cx.fillText('RÜCKEN',e.x+j+e.w/2,e.y+e.h-6)}else if(e.k==='a'){cx.fillStyle='#fff';cx.fillRect(e.x,e.y,e.w,e.h);cx.fillStyle='#e4002b';cx.fillRect(e.x,e.y,e.w,8);cx.font='8px "Press Start 2P",monospace';cx.fillText('ABMAH',e.x+e.w/2,e.y+24);cx.fillText('NUNG',e.x+e.w/2,e.y+36)}else{cx.fillStyle='#8a8f98';cx.fillRect(e.x,e.y,e.w,e.h);cx.fillStyle='#d9dde3';for(let i=0;i<3;i++)cx.fillRect(e.x+4,e.y+4+i*9,e.w-8,6);cx.fillStyle='#111';cx.font='9px "Press Start 2P",monospace';cx.fillText('ARBEIT',e.x+e.w/2,e.y+e.h+12)}}
+  const p=G.p;if(BEN.complete&&BEN.naturalWidth){cx.save();if(p.vx<0){cx.translate(p.x+p.w,p.y);cx.scale(-1,1);cx.drawImage(BEN,0,0,p.w,p.h)}else cx.drawImage(BEN,p.x,p.y,p.w,p.h);cx.restore()}else{cx.fillStyle='#ffd400';cx.fillRect(p.x,p.y,p.w,p.h)}
+  cx.fillStyle='#ffd400';cx.font='14px "Press Start 2P",monospace';cx.textAlign='left';cx.fillText(String(G.score).padStart(6,'0'),10,26);
+  cx.textAlign='right';cx.fillStyle='#ff3b5c';cx.fillText('HI '+String(Math.max(G.score,(S.scores[0]||{}).s||0)).padStart(6,'0'),W-10,26);
+  if(tmsg&&performance.now()-tmsgT<1200){cx.textAlign='center';cx.fillStyle='#fff';cx.font='12px "Press Start 2P",monospace';cx.fillText(tmsg,W/2,70)}}
+function gameOver(why){G.over=true;cancelAnimationFrame(raf);fanfare(true);const sc=G.score,l=S.scores||[];
+  const q=sc>0&&(l.length<10||sc>l[l.length-1].s);
+  let last='';try{last=localStorage.getItem('wm-ini')||''}catch(e){}
+  ov(`<h3>GAME OVER</h3><div>${esc(why)}</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>INITIALEN</div><input id="ini" maxlength="3" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="isave">EINTRAGEN</button>`:`<div style="color:#fff;font-size:10px">${pick(['BEN IST ENTTÄUSCHT.','DAS WAR NIX.','DIE ARBEIT LACHT DICH AUS.','NOCHMAL, ABER DIESMAL GUT.'])}</div><button id="gagain">NOCHMAL</button>`));
+  if(q){const i=$('ini');setTimeout(()=>i.focus(),50);const sv=()=>{const n=i.value.replace(/[^A-Za-z0-9ÄÖÜäöü]/g,'').slice(0,3).toUpperCase();if(!n){i.focus();return}
+      try{localStorage.setItem('wm-ini',n)}catch(e){}const top=!l.length||sc>l[0].s;
+      S.scores=[...l,{n,s:sc,at:Date.now()}].sort((a,b)=>b.s-a.s).slice(0,10);save();
+      if(top){confetti();fanfare(false);toast(n+' IST DIE NEUE NUMMER 1!')}
+      ov(`<h3>EINGETRAGEN</h3><div>PLATZ ${S.scores.findIndex(x=>x.n===n&&x.s===sc)+1}</div><button id="gagain">NOCHMAL</button>`);$('gagain').onclick=newGame};
+    $('isave').onclick=sv;i.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')sv()})}
+  else $('gagain').onclick=newGame}
+addEventListener('keydown',e=>{if(location.hash!=='#arcade'||/input/i.test(document.activeElement.tagName))return;
+  if(['ArrowLeft','a','A'].includes(e.key)){keys.l=true;e.preventDefault()}if(['ArrowRight','d','D'].includes(e.key)){keys.r=true;e.preventDefault()}
+  if((e.key===' '||e.key==='Enter')&&(!G||G.over)&&$('gstart')){e.preventDefault();newGame()}});
+addEventListener('keyup',e=>{if(['ArrowLeft','a','A'].includes(e.key))keys.l=false;if(['ArrowRight','d','D'].includes(e.key))keys.r=false});
+const arc=$('arc');arc.addEventListener('pointerdown',e=>{if(e.target.closest('button,input'))return;const r=arc.getBoundingClientRect();if(e.clientX-r.left<r.width/2){keys.l=true;keys.r=false}else{keys.r=true;keys.l=false}});
+['pointerup','pointercancel','pointerleave'].forEach(n=>arc.addEventListener(n,()=>{keys.l=keys.r=false}));
+addEventListener('hashchange',()=>{if(location.hash!=='#arcade'&&G&&!G.over){G.over=true;cancelAnimationFrame(raf)}if(location.hash==='#arcade'&&(!G||G.over))startScreen()});
+if(location.hash==='#arcade')startScreen();
+
+bingo();route();if(location.hash!=='#arcade')ov('');
 render();showResult();
 }
 </script>
