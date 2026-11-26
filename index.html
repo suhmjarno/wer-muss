@@ -101,6 +101,7 @@ body.chef #rot{filter:hue-rotate(0);animation:hue 1s linear infinite}@keyframes 
 .arcov h3{font-family:"Press Start 2P",monospace;font-size:20px;margin:0;color:#ff3b5c;text-shadow:3px 3px 0 #1f4fff}
 .arcov button{font-family:"Press Start 2P",monospace;font-size:13px;background:#e4002b;color:#fff;border:3px solid #ffd400;border-radius:8px}
 .arcov input{font-family:"Press Start 2P",monospace;font-size:28px;width:5.2em;text-align:center;text-transform:uppercase;letter-spacing:.3em;background:#000;color:#ffd400;border:3px solid #ffd400;border-radius:8px;padding:8px}
+.arc canvas.trip{animation:trip .7s linear infinite}@keyframes trip{0%{filter:hue-rotate(0) saturate(2)}50%{filter:hue-rotate(180deg) saturate(3)}100%{filter:hue-rotate(360deg) saturate(2)}}
 .blink{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}
 .hs{list-style:none;margin:0 auto;padding:16px;max-width:380px;background:#000;border:6px solid #111;border-radius:16px;font-family:"Press Start 2P",monospace;font-size:13px;color:#ffd400}
 .hs li{display:grid;grid-template-columns:3.5em 1fr auto;gap:8px;padding:6px 0}.hs li:nth-child(1){color:#ff3b5c}.hs li:nth-child(2){color:#4fd1ff}.hs li:nth-child(3){color:#7CFC00}
@@ -234,7 +235,7 @@ body.chef #rot{filter:hue-rotate(0);animation:hue 1s linear infinite}@keyframes 
 </section>
 <section class="band view" id="v-arcade" hidden>
   <h2>Ben-Jump</h2>
-  <p class="sub">Ben drückt sich vor der Arbeit – hilf ihm dabei. Steuern: Pfeiltasten / A-D oder linke/rechte Hälfte antippen. Weich Arbeit, Abmahnungen und Rückenschmerzen aus (draufspringen geht auch). Kaffee = Turbo, Feierabend-Uhr = Mega-Turbo, Groove-Banger = Ultra-Turbo.</p>
+  <p class="sub">Ben drückt sich vor der Arbeit – hilf ihm dabei. Steuern: Pfeiltasten / A-D oder linke/rechte Hälfte antippen. Weich Arbeit, Abmahnungen und Rückenschmerzen aus (draufspringen geht auch). Kaffee = Turbo, Feierabend-Uhr = Mega-Turbo, Groove-Banger = Ultra-Turbo, Keta = Ben-Spezial.</p>
   <div class="arc" id="arc"><canvas id="cv" width="360" height="540"></canvas><div class="arcov" id="arcov"></div></div>
   <h2 style="margin-top:22px;text-align:center">Hall of Fame</h2>
   <ol class="hs" id="hs"></ol>
@@ -477,20 +478,20 @@ try{const m=getComputedStyle(document.body).cursor.match(/url\("?(data:image\/pn
 let G=null,keys={l:false,r:false},raf=0;
 function ov(html){$('arcov').innerHTML=html;$('arcov').hidden=!html}
 function startScreen(){ov(`<h3>BEN-JUMP</h3><div>HIGHSCORE ${(S.scores[0]||{}).s||0}</div><div class="blink">INSERT COIN</div><button id="gstart">START</button><div style="font-size:9px;color:#fff">← → / A D / TIPPEN</div>`);$('gstart').onclick=newGame;drawBg();}
-function plat(y,lvl){const r=Math.random(),t=lvl>800&&r<.18?'b':lvl>300&&r<.38?'m':'n';return{x:Math.random()*(W-64),y,w:64,h:12,t,vx:t==='m'?(Math.random()<.5?-1:1)*(1+Math.min(2,lvl/2500)):0,k:Math.random()<.08?((r2=>r2<.2?'f':r2<.45?'g':'c')(Math.random())):false,gone:false}}
-function newGame(){ov('');cancelAnimationFrame(raf);
+function plat(y,lvl){const r=Math.random(),t=lvl>800&&r<.18?'b':lvl>300&&r<.38?'m':'n';return{x:Math.random()*(W-64),y,w:64,h:12,t,vx:t==='m'?(Math.random()<.5?-1:1)*(1+Math.min(2,lvl/2500)):0,k:Math.random()<.08?((r2=>r2<.18?'f':r2<.38?'g':r2<.58?'K':'c')(Math.random())):false,gone:false}}
+function newGame(){ov('');cv.classList.remove('trip');cancelAnimationFrame(raf);
   G={p:{x:W/2-14,y:H-140,w:28,h:76,vx:0,vy:-11},pl:[],en:[],score:0,top:H,over:false,last:performance.now()};
   G.pl.push({x:W/2-40,y:H-40,w:80,h:12,t:'n',vx:0,k:false,gone:false});
   let y=H-40;while(y>-H){y-=55+Math.random()*30;G.pl.push(plat(y,0))}
   raf=requestAnimationFrame(loop)}
 function loop(t){const dt=Math.min(2,(t-G.last)/16.67);G.last=t;step(dt);draw();if(!G.over)raf=requestAnimationFrame(loop)}
-function step(dt){const p=G.p,lvl=G.score;
+function step(dt){const p=G.p,lvl=G.score;if(G.trip&&performance.now()>G.trip){G.trip=0;cv.classList.remove('trip')}
   p.vx=(keys.l?-5.2:0)+(keys.r?5.2:0);p.x+=p.vx*dt;if(p.x>W)p.x=-p.w;if(p.x<-p.w)p.x=W;
   p.vy+=.38*dt;p.y+=p.vy*dt;
   for(const q of G.pl){if(q.t==='m'){q.x+=q.vx*dt;if(q.x<0||q.x>W-q.w)q.vx*=-1}
     if(!q.gone&&p.vy>0&&p.x+p.w*.8>q.x&&p.x+p.w*.2<q.x+q.w&&p.y+p.h>=q.y&&p.y+p.h-p.vy*dt<=q.y+4){
       if(q.t==='b'){q.gone=true;beep(180,.12,'sawtooth',.05);continue}
-      p.vy=q.k==='g'?-32:q.k==='f'?-27:q.k?-19:-11;if(q.k){toast2(q.k==='g'?'GROOVE-BANGER!!!':q.k==='f'?'FEIERABEND! TSCHÜSS!':'KAFFEE-TURBO!');if(q.k==='g')[392,523,659,784,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.12,'square',.06),i*90));q.k=false;beep(880,.25,'square',.06)}else beep(520,.05,'square',.04)}}
+      p.vy=q.k==='K'?-34:q.k==='g'?-32:q.k==='f'?-27:q.k?-19:-11;if(q.k){if(q.k==='K'){G.trip=performance.now()+4500;cv.classList.add('trip')}toast2(q.k==='K'?'KETA! BEN IST RAUS.':q.k==='g'?'GROOVE-BANGER!!!':q.k==='f'?'FEIERABEND! TSCHÜSS!':'KAFFEE-TURBO!');if(q.k==='g')[392,523,659,784,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.12,'square',.06),i*90));q.k=false;beep(880,.25,'square',.06)}else beep(520,.05,'square',.04)}}
   for(const e of G.en){e.x+=e.vx*dt;if(e.x<0||e.x>W-e.w)e.vx*=-1;
     if(!e.dead&&p.x+p.w>e.x+4&&p.x<e.x+e.w-4&&p.y+p.h>e.y&&p.y<e.y+e.h){
       if(p.vy>0&&p.y+p.h-e.y<18){e.dead=true;p.vy=-13;G.score+=500;beep(1200,.2,'square',.07);toast2(e.k==='a'?'ABMAHNUNG ZERRISSEN +500':e.k==='r'?'RÜCKEN EINGERENKT +500':'ARBEIT VERMIEDEN +500')}
@@ -509,6 +510,7 @@ function draw(){drawBg();
   for(const q of G.pl){if(q.gone)continue;cx.fillStyle=q.t==='m'?'#4fd1ff':q.t==='b'?'#a0522d':'#7CFC00';cx.fillRect(q.x,q.y,q.w,q.h);cx.fillStyle='rgba(0,0,0,.35)';cx.fillRect(q.x,q.y+q.h-4,q.w,4);
     if(q.t==='b'){cx.strokeStyle='#000';cx.beginPath();cx.moveTo(q.x+q.w/2,q.y);cx.lineTo(q.x+q.w/2-6,q.y+q.h);cx.stroke()}
     if(q.k==='c'){cx.fillStyle='#fff';cx.fillRect(q.x+q.w/2-7,q.y-14,14,13);cx.fillStyle='#6b3e1f';cx.fillRect(q.x+q.w/2-5,q.y-12,10,5);cx.strokeStyle='#fff';cx.lineWidth=2;cx.strokeRect(q.x+q.w/2+7,q.y-11,4,6);cx.lineWidth=1}
+    if(q.k==='K'){const c=q.x+q.w/2;cx.fillStyle='#b48cff';cx.fillRect(c-10,q.y-22,20,20);cx.fillStyle='#fff';cx.fillRect(c-10,q.y-22,20,4);cx.fillStyle='#111';cx.font='10px "Press Start 2P",monospace';cx.textAlign='center';cx.fillText('K',c,q.y-6)}
     if(q.k==='g'){const c=q.x+q.w/2,b=Math.sin(performance.now()/120)*2;cx.fillStyle='#ff3bd4';cx.fillRect(c-12,q.y-24+b,24,22);cx.fillStyle='#111';cx.beginPath();cx.arc(c,q.y-13+b,7,0,7);cx.fill();cx.fillStyle='#ffd400';cx.beginPath();cx.arc(c,q.y-13+b,3,0,7);cx.fill()}
     if(q.k==='f'){const c=q.x+q.w/2;cx.fillStyle='#ffd400';cx.beginPath();cx.arc(c,q.y-11,10,0,7);cx.fill();cx.strokeStyle='#111';cx.lineWidth=2;cx.beginPath();cx.moveTo(c,q.y-11);cx.lineTo(c,q.y-18);cx.moveTo(c,q.y-11);cx.lineTo(c+6,q.y-11);cx.stroke();cx.lineWidth=1}}
   for(const e of G.en){cx.textAlign='center';if(e.k==='r'){const j=Math.sin(performance.now()/60)*2;cx.fillStyle='#ff5fa2';cx.fillRect(e.x+j,e.y,e.w,e.h);cx.strokeStyle='#111';cx.lineWidth=3;cx.beginPath();for(let i=0;i<=6;i++)cx.lineTo(e.x+j+6+i*(e.w-12)/6,e.y+8+(i%2?10:0));cx.stroke();cx.lineWidth=1;cx.fillStyle='#111';cx.font='7px "Press Start 2P",monospace';cx.fillText('RÜCKEN',e.x+j+e.w/2,e.y+e.h-6)}else if(e.k==='a'){cx.fillStyle='#fff';cx.fillRect(e.x,e.y,e.w,e.h);cx.fillStyle='#e4002b';cx.fillRect(e.x,e.y,e.w,8);cx.font='8px "Press Start 2P",monospace';cx.fillText('ABMAH',e.x+e.w/2,e.y+24);cx.fillText('NUNG',e.x+e.w/2,e.y+36)}else{cx.fillStyle='#8a8f98';cx.fillRect(e.x,e.y,e.w,e.h);cx.fillStyle='#d9dde3';for(let i=0;i<3;i++)cx.fillRect(e.x+4,e.y+4+i*9,e.w-8,6);cx.fillStyle='#111';cx.font='9px "Press Start 2P",monospace';cx.fillText('ARBEIT',e.x+e.w/2,e.y+e.h+12)}}
@@ -516,7 +518,7 @@ function draw(){drawBg();
   cx.fillStyle='#ffd400';cx.font='14px "Press Start 2P",monospace';cx.textAlign='left';cx.fillText(String(G.score).padStart(6,'0'),10,26);
   cx.textAlign='right';cx.fillStyle='#ff3b5c';cx.fillText('HI '+String(Math.max(G.score,(S.scores[0]||{}).s||0)).padStart(6,'0'),W-10,26);
   if(tmsg&&performance.now()-tmsgT<1200){cx.textAlign='center';cx.fillStyle='#fff';cx.font='12px "Press Start 2P",monospace';cx.fillText(tmsg,W/2,70)}}
-function gameOver(why){G.over=true;cancelAnimationFrame(raf);fanfare(true);const sc=G.score,l=S.scores||[];
+function gameOver(why){G.over=true;cv.classList.remove('trip');cancelAnimationFrame(raf);fanfare(true);const sc=G.score,l=S.scores||[];
   const q=sc>0&&(l.length<10||sc>l[l.length-1].s);
   let last='';try{last=localStorage.getItem('wm-ini')||''}catch(e){}
   ov(`<h3>GAME OVER</h3><div>${esc(why)}</div><div style="font-size:18px;color:#fff">${sc}</div>`+(q?`<div class="blink">NEUER HIGHSCORE!</div><div>INITIALEN</div><input id="ini" maxlength="3" value="${esc(last)}" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="isave">EINTRAGEN</button>`:`<div style="color:#fff;font-size:10px">${pick(['BEN IST ENTTÄUSCHT.','DAS WAR NIX.','DIE ARBEIT LACHT DICH AUS.','NOCHMAL, ABER DIESMAL GUT.'])}</div><button id="gagain">NOCHMAL</button>`));
