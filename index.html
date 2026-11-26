@@ -71,7 +71,7 @@ footer{text-align:center;font-size:13px;color:var(--mute);padding-bottom:28px}
 #gate{position:fixed;inset:0;z-index:20;background:var(--bg);display:grid;place-items:center;padding:20px}
 #gate form{width:min(100%,380px);background:var(--card);border:3px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 8px 0 #111}
 #gate .err{color:var(--red);font-weight:800;min-height:1.5em;margin:8px 0 0}
-.confetti{position:fixed;top:-20px;width:10px;height:16px;z-index:15;pointer-events:none;animation:fall 2.6s linear forwards}
+.confetti{position:absolute;top:-20px;width:10px;height:16px;z-index:15;pointer-events:none;animation:fall 2.6s linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 .shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @media(prefers-reduced-motion:reduce){.confetti{display:none}.shake{animation:none}}
@@ -117,6 +117,11 @@ body.chef #rot{filter:hue-rotate(0);animation:hue 1s linear infinite}@keyframes 
 .arc.fs canvas{width:100%;height:100%;object-fit:contain}
 .arc.fs .fsb{top:max(10px,env(safe-area-inset-top));right:10px}
 body.fsmode{overflow:hidden}
+html,body{overflow-x:hidden;max-width:100%}body{position:relative;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#fx{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:15}
+.arc.fs{left:0;top:0;right:0;bottom:0;width:auto!important;height:auto!important}
+@media (orientation:portrait){#arc3.fs canvas{position:absolute;left:50%;top:50%;width:100vh;width:100dvh;height:100vw;transform:translate(-50%,-50%) rotate(90deg);object-fit:contain}
+ #arc3.fs::after{content:'📱 Handy quer halten';position:absolute;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));text-align:center;color:#ffd400;font:10px "Press Start 2P",monospace;pointer-events:none}}
 .weekend{background:#111;color:#ffd400;text-align:center;font-weight:800;padding:10px}
 </style>
 </head>
@@ -417,7 +422,7 @@ function appeal(){
   else{sp.appeal='denied';save();fanfare(true);showResult()}
 }
 function flash(t){$('result').innerHTML=`<div class="what" style="margin-top:18px">${esc(t)}</div>`;$('result').classList.remove('shake');void $('result').offsetWidth;$('result').classList.add('shake')}
-function confetti(){const c=['#e4002b','#1f4fff','#111','#fff','#00b34a'];for(let i=0;i<60;i++){const d=document.createElement('i');d.className='confetti';d.style.left=Math.random()*100+'vw';d.style.background=pick(c);d.style.animationDelay=Math.random()*.6+'s';d.style.animationDuration=2+Math.random()*1.5+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),4200)}}
+function confetti(){let fx=$('fx');if(!fx){fx=document.createElement('div');fx.id='fx';document.body.appendChild(fx)}const c=['#e4002b','#1f4fff','#111','#fff','#00b34a'];for(let i=0;i<60;i++){const d=document.createElement('i');d.className='confetti';d.style.left=Math.random()*96+'%';d.style.background=pick(c);d.style.animationDelay=Math.random()*.6+'s';d.style.animationDuration=2+Math.random()*1.5+'s';fx.appendChild(d);setTimeout(()=>d.remove(),4200)}}
 
 /* ---------- Rendern ---------- */
 function render(){
@@ -670,7 +675,9 @@ function aStep(dt){const p=A.p,G=.35;
 function aSettle(){A.b=A.b.filter(o=>!o.dead);A.b.forEach(o=>{o.awake=false;o.vx=o.vy=0});A.p=null;
   if(!A.b.some(o=>o.t==='g')){A.score+=A.shots*500;A.lvl++;A.shots=5;A.b=lvlBuild(A.lvl);A.msg=A.b.some(o=>o.boss)?'BOSS-LEVEL: OLI!':'LEVEL '+A.lvl;A.msgT=performance.now();fanfare(false);A.state='aim'}
   else if(A.shots>0)A.state='aim';else aOver()}
-function aPt(e){const r=cv3.getBoundingClientRect(),k=Math.min(r.width/AW,r.height/AH),ox=r.left+(r.width-AW*k)/2,oy=r.top+(r.height-AH*k)/2;return[(e.clientX-ox)/k,(e.clientY-oy)/k]}
+function aPt(e){const r=cv3.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy,w=r.width,h=r.height;
+  if($('arc3').classList.contains('fs')&&matchMedia('(orientation:portrait)').matches){const t=dx;dx=dy;dy=-t;w=cv3.offsetWidth;h=cv3.offsetHeight}
+  const k=Math.min(w/AW,h/AH);return[dx/k+AW/2,dy/k+AH/2]}
 $('arc3').addEventListener('pointerdown',e=>{if(e.target.closest('button,input')||!A||A.state!=='aim')return;e.preventDefault();const[x,y]=aPt(e);if(Math.hypot(x-SX,y-SY)<90){A.drag=[SX,SY];try{$('arc3').setPointerCapture(e.pointerId)}catch(_){}}});
 $('arc3').addEventListener('pointermove',e=>{if(!A||!A.drag)return;e.preventDefault();let[x,y]=aPt(e),dx=x-SX,dy=y-SY,d=Math.hypot(dx,dy);if(d>75){dx*=75/d;dy*=75/d}A.drag=[SX+dx,SY+dy]});
 $('arc3').addEventListener('pointerup',e=>{if(!A||!A.drag)return;const[x,y]=A.drag,dx=SX-x,dy=SY-y;A.drag=null;if(Math.hypot(dx,dy)<12)return;
