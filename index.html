@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wer muss?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: TV-Spielshow am Montagmorgen – laut, bierernst, komplett albern
+   IDEA: das Glücksrad einer Samstagabend-Show, aufgebaut im Großraumbüro
+   PICTURE: großes Rad mit Zeiger, das bei allen gleichzeitig dreht
+   COLOUR and TYPE: Show-Gelb als Grund, Schwarz, Signalrot; Bungee + Rubik
+   LAYOUT: Rad oben/links, Steuerpult rechts, darunter Schande-Tabelle */
+:root{color-scheme:light dark;--bg:light-dark(#ffd400,#151204);--ink:light-dark(#111,#fff4c2);--card:light-dark(#fff,#221d08);--line:light-dark(#111,#fff4c2);--red:#e4002b;--blue:#1f4fff;--mute:light-dark(#4a4300,#c9bd7e);--chip:light-dark(#fff7c7,#2d2609)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Rubik,system-ui,sans-serif;overflow-x:clip}
+h1,h2,.big{font-family:Bungee,Impact,sans-serif;font-weight:400;line-height:1.05;margin:0}
+h1{font-size:clamp(36px,7vw,52px)}h2{font-size:22px;margin-bottom:12px}
+.band{padding:clamp(20px,3.5vw,48px) max(4vw,14px)}
+.wrap{max-width:1240px;margin:0 auto}
+header .wrap{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:8px 20px}
+.sub{color:var(--mute);font-weight:600}
+#live{font-size:13px;font-weight:600;padding:6px 12px;border:2px solid var(--line);border-radius:99px;background:var(--card)}
+#live.on::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#00b34a;margin-right:7px;vertical-align:1px}
+.stage{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(16px,3vw,40px);align-items:start}
+@media(max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+.wheelbox{position:relative;width:min(100%,560px);aspect-ratio:1;margin:0 auto}
+.wheelbox svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 10px 0 rgba(0,0,0,.25))}
+.ptr{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:44px;z-index:2;filter:drop-shadow(0 3px 0 rgba(0,0,0,.3))}
+.spinrow{display:flex;justify-content:center;margin-top:18px}
+button{font:inherit;font-weight:600;cursor:pointer;min-height:44px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+button:disabled{opacity:.5;cursor:not-allowed}
+#spin{font-family:Bungee,Impact,sans-serif;font-size:clamp(22px,4vw,30px);font-weight:400;background:var(--red);color:#fff;border-color:#111;padding:14px 36px;border-radius:18px;box-shadow:0 6px 0 #111;transition:transform .08s}
+#spin:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #111}
+.result{margin-top:18px;background:var(--card);border:3px solid var(--line);border-radius:18px;padding:16px 18px;text-align:center;min-height:110px;position:relative;overflow:hidden}
+.result .who{font-family:Bungee,Impact,sans-serif;font-size:clamp(30px,6vw,46px);line-height:1.05;color:var(--red);overflow-wrap:anywhere}
+.result .what{font-weight:800}.result .roast{color:var(--mute);margin-top:6px}
+.stamp{position:absolute;right:10px;top:12px;transform:rotate(12deg);border:3px solid var(--red);color:var(--red);font-family:Bungee,sans-serif;padding:2px 8px;border-radius:6px;font-size:15px;background:var(--card)}
+.acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.panel{background:var(--card);border:3px solid var(--line);border-radius:18px;padding:16px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px}
+.tabs button{border-radius:10px}.tabs button[aria-selected=true]{background:var(--ink);color:var(--card)}
+label{display:block;font-weight:800;margin:14px 0 6px;font-size:15px}
+input[type=text],select,textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:2px solid var(--line);border-radius:10px;background:var(--chip);color:var(--ink);min-height:44px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:14px;min-height:38px;padding:6px 12px;border-radius:99px;background:var(--chip)}
+.person{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dashed color-mix(in srgb,var(--line) 35%,transparent)}
+.person .tog{text-align:left;display:flex;align-items:center;gap:10px}
+.person .tog .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex:none}
+.person.here .tog .dot{background:#00b34a}
+.person:not(.here) .tog{opacity:.55;text-decoration:line-through}
+.person .x{width:44px;padding:0}
+.person .im{font-size:13px}
+.person .im.on{background:var(--red);color:#fff;border-color:#111}
+.row{display:flex;gap:6px}.row input{flex:1}
+.hint{font-size:13px;color:var(--mute);margin:6px 0 0}
+.items .person{grid-template-columns:minmax(0,1fr) auto}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2.5vw,28px)}
+@media(max-width:860px){.grid3{grid-template-columns:minmax(0,1fr)}}
+.bar{display:grid;grid-template-columns:5.5em minmax(0,1fr) 2em;gap:8px;align-items:center;margin:7px 0;font-weight:600}
+.bar i{display:block;height:18px;background:var(--red);border:2px solid var(--line);border-radius:6px;min-width:4px}
+.bar b{text-align:right}
+.crown{background:var(--ink);color:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-weight:600}
+ol.hist{list-style:none;margin:0;padding:0}ol.hist li{padding:8px 0;border-bottom:1px dashed color-mix(in srgb,var(--line) 35%,transparent);font-size:15px}
+ol.hist small{color:var(--mute);display:block}
+#excuse{font-size:19px;font-weight:600;min-height:3em}
+footer{text-align:center;font-size:13px;color:var(--mute);padding-bottom:28px}
+#gate{position:fixed;inset:0;z-index:20;background:var(--bg);display:grid;place-items:center;padding:20px}
+#gate form{width:min(100%,380px);background:var(--card);border:3px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 8px 0 #111}
+#gate .err{color:var(--red);font-weight:800;min-height:1.5em;margin:8px 0 0}
+.confetti{position:fixed;top:-20px;width:10px;height:16px;z-index:15;pointer-events:none;animation:fall 2.6s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(prefers-reduced-motion:reduce){.confetti{display:none}.shake{animation:none}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="gate">
+  <form id="gform" autocomplete="off">
+    <h2>Zutritt nur für Büro-Personal</h2>
+    <p class="sub" style="margin:0">Passwort bitte. Und nein, „Passwort“ ist es nicht.</p>
+    <label for="pw">Passwort</label>
+    <input type="text" id="pw" autocomplete="off" autocapitalize="off" spellcheck="false" style="-webkit-text-security:disc">
+    <p class="err" id="gerr"></p>
+    <button type="submit" style="width:100%;background:var(--red);color:#fff;border-color:#111">Rein da</button>
+  </form>
+</div>
+
+<header class="band" style="padding-bottom:0">
+  <div class="wrap">
+    <div>
+      <h1>Wer muss?</h1>
+      <div class="sub">Das offizielle Büro-Schicksalsrad. Entscheidungen sind endgültig. Meistens.</div>
+    </div>
+    <span id="live">Verbinde …</span>
+  </div>
+</header>
+
+<main class="band">
+  <div class="wrap stage">
+    <section aria-label="Glücksrad">
+      <div class="wheelbox">
+        <svg class="ptr" viewBox="0 0 44 54" aria-hidden="true"><path d="M4 4h36L22 50z" fill="#e4002b" stroke="#111" stroke-width="4" stroke-linejoin="round"/></svg>
+        <svg id="wheel" viewBox="-104 -104 208 208" role="img" aria-label="Glücksrad"><g id="rot"></g><circle r="14" fill="#111"/><circle r="8" fill="#ffd400"/></svg>
+      </div>
+      <div class="spinrow"><button id="spin">Drehen!</button></div>
+      <div class="result" id="result" aria-live="polite"></div>
+    </section>
+
+    <section class="panel" aria-label="Einstellungen">
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tabP" aria-selected="true">Wer muss?</button>
+        <button role="tab" id="tabF" aria-selected="false">Freies Glücksrad</button>
+      </div>
+
+      <div id="paneP">
+        <label for="task">Was muss erledigt werden?</label>
+        <input type="text" id="task" maxlength="60" placeholder="z. B. Kaffee holen">
+        <div class="chips" id="taskPresets" style="margin-top:8px"></div>
+        <label for="mode">Modus</label>
+        <select id="mode">
+          <option value="fair">Fair – wer oft dran war, hat weniger Pech</option>
+          <option value="chaos">Chaos – reiner Zufall, keine Gnade</option>
+          <option value="pech">Pechsträhne – das letzte Opfer zählt doppelt</option>
+        </select>
+        <label>Wer ist heute da?</label>
+        <div id="people"></div>
+        <p class="hint">Antippen = da / nicht da. „Brezel“ = für die nächste Runde freigekauft (Brezel ist bitte wirklich mitzubringen).</p>
+        <form class="row" id="addP" style="margin-top:10px"><input type="text" id="newP" maxlength="20" placeholder="Neuer Kollege" aria-label="Neuer Kollege"><button type="submit">Rein</button></form>
+      </div>
+
+      <div id="paneF" hidden>
+        <label for="ftitle">Worum geht's?</label>
+        <input type="text" id="ftitle" maxlength="50" placeholder="z. B. Was essen wir heute?">
+        <label>Vorlagen</label>
+        <div class="chips" id="fPresets"></div>
+        <label>Felder auf dem Rad</label>
+        <div class="items" id="fItems"></div>
+        <form class="row" id="addF" style="margin-top:10px"><input type="text" id="newF" maxlength="24" placeholder="Neues Feld" aria-label="Neues Feld"><button type="submit">Drauf</button></form>
+        <p class="hint">Mindestens 2 Felder, höchstens 16. Ändert ihr hier was, sehen es alle sofort.</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<section class="band" style="padding-top:0">
+  <div class="wrap grid3">
+    <div class="panel">
+      <h2>Schande-Tabelle</h2>
+      <div id="crown"></div>
+      <div id="bars"></div>
+      <p class="hint">Zählt die „Wer muss?“-Runden in diesem Monat.</p>
+    </div>
+    <div class="panel">
+      <h2>Verlauf</h2>
+      <ol class="hist" id="hist"></ol>
+    </div>
+    <div class="panel">
+      <h2>Ausrede-Generator</h2>
+      <p id="excuse">Erwischt? Hier gibt's die passende Ausrede.</p>
+      <button id="exBtn" style="width:100%">Ausrede ziehen</button>
+      <button id="exCopy" style="width:100%;margin-top:8px">Kopieren</button>
+    </div>
+  </div>
+</section>
+<footer>Kein Rechtsweg. Kein Einspruch. Okay, ein Einspruch.</footer>
+
+<script>
+{
+const PW_HASH='5d2db9982b353a55cbe1725cf646d894704461f1eac9dba7fe9f4b28054ded9c';
+const DEF_PEOPLE=['Max','Dennis','Jarno','Jörg','Ste','Clara'].map(n=>({n,here:true}));
+const TASKS=['Kaffee holen','Spülmaschine ausräumen','Mittagessen holen','Post holen','Müll rausbringen','Telefon abnehmen','Pakete packen','Kuchen mitbringen','Bei Oli nachfragen'];
+const FPRE={'Mittagessen':['Döner','Pizza','Asia','Bäcker','Kantine','Burger','Salat (haha)'],'Strafe':['10 Liegestütze','Runde Kaffee zahlen','Kompliment an jeden','Eine Stunde Schlager','Lied singen','Kuchen morgen'],'Ja / Nein':['Ja','Nein','Vielleicht','Frag Clara','Auf keinen Fall','Morgen nochmal'],'Feierabend':['Pünktlich','5 Minuten früher','Überstunde','Keiner geht, bevor Jörg geht']};
+const ROAST=['Das Rad hat gesprochen. Das Rad irrt nie.','Herzlichen Glückwunsch, du hast nichts gewonnen.','Statistisch gesehen war das überfällig.','Das Universum mag dich heute nicht besonders.','Bitte mit einem Lächeln. Oder zumindest ohne Augenrollen.','Gerüchten zufolge war das Rad bestochen. Nicht von dir.','Du schaffst das. Wahrscheinlich.','Vorbildlicher Einsatz, den du gleich zeigen wirst.','Ein kleiner Schritt für die Menschheit, ein großer Gang zur Kaffeemaschine.','Karma ist eine Drehscheibe.','Hättest du mal Brezeln mitgebracht.','Das Rad kennt deine Sünden.','Kein Mitleid. Nur Konfetti.','Rechtsmittel: keine. Taschentücher: links.'];
+const EX=[['Ich kann nicht, ','Leider unmöglich, ','Würde ich ja, aber ','Sorry, '],['mein Horoskop ','die Kaffeemaschine ','mein Hausarzt ','Oli ','mein Rücken ','das WLAN ','meine Oma ','der Mond '],['hat mir das heute ausdrücklich verboten.','sieht das kritisch.','ist noch in der Probezeit.','hat Mittwochs schlechte Laune.','meint, ich soll mich schonen.','hat gesagt, Jarno macht das.','ist dagegen, und ich respektiere das.','hat einen Traum gehabt, in dem das schlecht ausging.','ist allergisch gegen Arbeit.','hat gesagt, das Rad ist manipuliert.']];
+const HYPE=['Spannung!','Wer wird es?','Bitte nicht ich …','Das Rad überlegt …','Oli schaut zu …','Atmen nicht vergessen!','Gleich knallt\'s …','Fast …'];
+const TITLE=['wird hiermit zum Ehrenpraktikanten ernannt.','ist ab sofort Chef der Abteilung Drecksarbeit.','erhält den goldenen Kaffeebecher am Bande.','darf sich offiziell Büro-Sklave nennen.','wurde vom Universum persönlich ausgewählt.','gewinnt eine Reise zur Kaffeemaschine. Einfache Strecke.'];
+const COLS=[['#e4002b','#fff'],['#111111','#ffd400'],['#ffffff','#111'],['#1f4fff','#fff']];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+let S={people:DEF_PEOPLE,immune:[],task:'Kaffee holen',mode:'fair',tab:'people',free:{title:'Was essen wir heute?',items:FPRE['Mittagessen']},history:[],spin:null};
+const TOPIC='wermuss-848d27962e77f4be15eb',NTFY='https://ntfy.sh/'+TOPIC,ME=Math.random().toString(36).slice(2,10);
+let lastSpinId=null,curDeg=0,spinning=false,ts=0,online=false;
+
+/* ---------- Passwort ---------- */
+async function sha(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+try{if(localStorage.getItem('wm-ok')===PW_HASH)$('gate').hidden=true}catch(e){}
+$('gform').addEventListener('submit',async e=>{e.preventDefault();
+  let ok=false;try{ok=(await sha($('pw').value))===PW_HASH}catch(err){}
+  if(ok){$('gate').hidden=true;try{localStorage.setItem('wm-ok',PW_HASH)}catch(e){}}
+  else{$('gerr').textContent=pick(['Falsch. Das Rad ist enttäuscht.','Nope. Versuch\'s mit Hirn.','Zugriff verweigert. Oli wurde informiert.']);$('gform').classList.remove('shake');void $('gform').offsetWidth;$('gform').classList.add('shake')}});
+
+/* ---------- Sync ---------- */
+let saving=Promise.resolve();
+const bytes=s=>new TextEncoder().encode(s).length;
+function pack(){let body;do{ts=Math.max(Date.now(),ts+1);body=JSON.stringify({v:1,ts,src:ME,s:S});if(bytes(body)>3800)S.history=S.history.slice(0,Math.max(0,S.history.length-3));else break}while(S.history.length);return body}
+function keep(body){try{localStorage.setItem('wm-state',body)}catch(e){}}
+function save(){render();const body=pack();keep(body);
+  saving=saving.then(()=>fetch(NTFY,{method:'POST',body})).then(r=>{if(r&&!r.ok)setLive(r.status===429?'Zu viele Klicks – kurz durchatmen':'Senden ging schief',online)}).catch(()=>setLive('Offline – läuft gerade nur bei dir'));}
+function apply(raw){let w;try{w=JSON.parse(raw)}catch(e){return}
+  if(!w||w.v!==1||!w.s||typeof w.ts!=='number'||w.ts<=ts||w.src===ME)return;
+  ts=w.ts;S=clean(w.s);keep(raw);render();handleSpin(false)}
+function setLive(t,on){$('live').textContent=t;$('live').classList.toggle('on',!!on)}
+function clean(d){const o={...S};
+  if(Array.isArray(d.people))o.people=d.people.filter(p=>p&&typeof p.n==='string').slice(0,20).map(p=>({n:p.n.slice(0,20),here:!!p.here}));
+  if(Array.isArray(d.immune))o.immune=d.immune.filter(x=>typeof x==='string');
+  if(typeof d.task==='string')o.task=d.task.slice(0,60);
+  if(['fair','chaos','pech'].includes(d.mode))o.mode=d.mode;
+  if(d.tab==='free'||d.tab==='people')o.tab=d.tab;
+  if(d.free&&Array.isArray(d.free.items))o.free={title:String(d.free.title||'').slice(0,50),items:d.free.items.map(x=>String(x).slice(0,24)).slice(0,16)};
+  if(Array.isArray(d.history))o.history=d.history.filter(h=>h&&typeof h.w==='string'&&typeof h.at==='number').map(h=>({k:h.k==='p'?'p':'f',t:String(h.t||'').slice(0,60),w:h.w.slice(0,24),at:h.at})).slice(0,25);
+  const sp=d.spin;o.spin=sp&&Array.isArray(sp.items)&&typeof sp.win==='string'&&typeof sp.stop==='number'&&typeof sp.at==='number'?{id:String(sp.id),kind:sp.kind==='p'?'p':'f',items:sp.items.map(x=>String(x).slice(0,24)).slice(0,20),idx:sp.idx|0,win:sp.win.slice(0,24),stop:sp.stop,task:String(sp.task||'').slice(0,60),at:sp.at,roast:String(sp.roast||'').slice(0,140),title:String(sp.title||'').slice(0,140),fake:!!sp.fake,appeal:sp.appeal==='denied'?'denied':null}:null;return o}
+(async()=>{
+  setLive('Verbinde …');
+  let got=false;
+  try{const r=await fetch(NTFY+'/json?poll=1&since=latest');const lines=(await r.text()).trim().split('\n').filter(Boolean);
+    for(const l of lines){try{const m=JSON.parse(l);if(m.event==='message'){apply(m.message);got=true}}catch(e){}}}catch(e){}
+  if(!got){let loc=null;try{loc=localStorage.getItem('wm-state')}catch(e){}
+    if(loc){try{const w=JSON.parse(loc);if(w&&w.s){S=clean(w.s);render();save()}}catch(e){}}}
+  try{const es=new EventSource(NTFY+'/sse');
+    es.onopen=()=>{online=true;setLive('Live – alle sehen dasselbe',true)};
+    es.onerror=()=>{online=false;setLive('Verbindung wackelt – versuche es weiter …')};
+    es.onmessage=e=>{try{const m=JSON.parse(e.data);if(m.event==='message')apply(m.message)}catch(err){}};
+  }catch(e){setLive('Offline – läuft nur bei dir')}
+})();
+
+/* ---------- Rad ---------- */
+function wheelItems(){return S.tab==='people'?S.people.filter(p=>p.here).map(p=>p.n):S.free.items}
+function drawWheel(items){
+  const n=Math.max(items.length,1),seg=360/n,R=100,g=$('rot');
+  const pt=(a,r)=>[(Math.sin(a*Math.PI/180)*r).toFixed(2),(-Math.cos(a*Math.PI/180)*r).toFixed(2)];
+  let h='';
+  if(!items.length)h=`<circle r="${R}" fill="#fff" stroke="#111" stroke-width="3"/><text y="5" text-anchor="middle" font-family="Rubik" font-weight="800" font-size="11">Keiner da?!</text>`;
+  else items.forEach((t,i)=>{const a0=i*seg,a1=a0+seg,[x0,y0]=pt(a0,R),[x1,y1]=pt(a1,R),c=COLS[(n%4===1&&i===n-1&&n>1)?2-(i%2):i%4];
+    h+=n===1?`<circle r="${R}" fill="${c[0]}"/>`:`<path d="M0 0L${x0} ${y0}A${R} ${R} 0 ${seg>180?1:0} 1 ${x1} ${y1}Z" fill="${c[0]}" stroke="#111" stroke-width="2"/>`;
+    const fs=Math.max(7,Math.min(14,150/Math.max(n,6)*(t.length>10?.75:1)));
+    h+=`<text transform="rotate(${a0+seg/2-90})" x="${R*0.6}" y="${fs*0.35}" text-anchor="middle" fill="${c[1]}" font-family="Rubik" font-weight="800" font-size="${fs}">${esc(t.length>16?t.slice(0,15)+'…':t)}</text>`});
+  h+=`<circle r="${R}" fill="none" stroke="#111" stroke-width="5"/>`;
+  for(let i=0;i<24;i++){const[x,y]=pt(i*15,R-4);h+=`<circle cx="${x}" cy="${y}" r="2.2" fill="#fff8d0" stroke="#111" stroke-width=".8"/>`}
+  g.innerHTML=h;g.style.transformOrigin='0 0';g.style.transform=`rotate(${curDeg}deg)`;
+}
+
+/* ---------- Sound ---------- */
+let ac=null;function beep(f,d,type='square',v=.06){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(ac.destination);const t=ac.currentTime;g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d)}catch(e){}}
+function fanfare(sad){(sad?[392,370,349,311]:[523,659,784,1047]).forEach((f,i)=>setTimeout(()=>beep(f,sad?.45:.25,sad?'sawtooth':'square',.07),i*(sad?380:140)))}
+
+/* ---------- Drehen ---------- */
+function weights(items){const now=Date.now(),last=S.history.find(h=>h.k==='p');
+  return items.map(n=>{if(S.mode==='chaos')return 1;
+    if(S.mode==='pech')return last&&last.w===n?2:1;
+    const c=S.history.filter(h=>h.k==='p'&&h.w===n&&now-h.at<7*864e5).length;return 1/(1+c)})}
+function doSpin(excl){
+  if(spinning)return;let items=wheelItems();
+  if(items.length<2){flash(S.tab==='people'?'Mindestens zwei Leute müssen da sein. Allein drehen ist traurig.':'Mindestens zwei Felder aufs Rad.');return}
+  let cand=items.map((n,i)=>({n,i}));
+  if(S.tab==='people'){cand=cand.filter(c=>!S.immune.includes(c.n)&&c.n!==excl);if(!cand.length)cand=items.map((n,i)=>({n,i})).filter(c=>c.n!==excl)}
+  const w=S.tab==='people'?weights(cand.map(c=>c.n)):cand.map(()=>1),tot=w.reduce((a,b)=>a+b,0);
+  let r=Math.random()*tot,k=0;while(r>w[k]&&k<w.length-1){r-=w[k];k++}
+  const win=cand[k],seg=360/items.length,stop=(360-(win.i+0.5+(Math.random()-.5)*.7)*seg+720)%360;
+  const task=S.tab==='people'?(S.task.trim()||'Irgendwas'):(S.free.title.trim()||'Glücksrad');
+  S.spin={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),kind:S.tab==='people'?'p':'f',items,idx:win.i,win:win.n,stop,task,at:Date.now(),roast:pick(ROAST),title:pick(TITLE),fake:Math.random()<0.25,appeal:null};
+  if(S.spin.kind==='p')S.immune=[];
+  S.history=[{k:S.spin.kind,t:task,w:win.n,at:S.spin.at},...S.history].slice(0,25);
+  save();handleSpin(true);
+}
+function handleSpin(mine){
+  const sp=S.spin;if(!sp||sp.id===lastSpinId){showResult();return}
+  const fresh=Date.now()-sp.at<15000;lastSpinId=sp.id;
+  if(!fresh||!mine&&spinning){curDeg=sp.stop;drawWheel(sp.items);showResult();return}
+  animate(sp);
+}
+function animate(sp){
+  spinning=true;$('spin').disabled=true;drawWheel(sp.items);$('result').innerHTML='<div class="big" style="font-size:28px;margin-top:22px">Trommelwirbel …</div>';
+  const seg=360/sp.items.length,from=curDeg,real=from+360*6+((sp.stop-from%360)+360)%360,to=sp.fake?real-seg:real;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let lastT=Math.floor(from/seg),hi=0;
+  const hype=setInterval(()=>{const b=$('result').querySelector('.big');if(b)b.textContent=HYPE[hi++%HYPE.length]},900);
+  const run=(a,b,dur,done)=>{const t0=performance.now();const step=now=>{const p=reduce?1:Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,4);curDeg=a+(b-a)*e;
+    $('rot').style.transform=`rotate(${curDeg}deg)`;const tk=Math.floor(curDeg/seg);if(tk!==lastT){lastT=tk;beep(900,.03)}
+    if(p<1)requestAnimationFrame(step);else done()};requestAnimationFrame(step)};
+  const end=()=>{clearInterval(hype);curDeg=real%360;spinning=false;$('spin').disabled=false;showResult(true)};
+  run(from,to,5200,()=>{if(!sp.fake)return end();clearInterval(hype);
+    $('result').innerHTML=`<div class="what" style="margin-top:14px">${esc(sp.items[(sp.idx+1)%sp.items.length])}?!</div><div class="big" style="font-size:24px">… Moment. Das Rad hat Schluckauf.</div>`;
+    beep(200,.3,'sawtooth',.08);setTimeout(()=>run(to,real,1400,end),1300)});
+}
+function showResult(boom){
+  const sp=S.spin,el=$('result');if(spinning)return;
+  if(!sp){el.innerHTML='<div class="what" style="margin-top:20px">Noch keiner dran. Genießt es, solange es geht.</div>';return}
+  const p=sp.kind==='p';
+  const n=p?S.history.filter(h=>h.k==='p'&&h.w===sp.win&&new Date(h.at).getMonth()===new Date().getMonth()).length:0;
+  el.innerHTML=(sp.appeal==='denied'?'<span class="stamp">Einspruch abgelehnt</span>':'')+
+    `<div class="what">${esc(sp.task)}:</div><div class="who">${esc(sp.win)}</div>`+(p&&sp.title?`<div class="what" style="margin-top:4px">${esc(sp.win)} ${esc(sp.title)}</div>`:'')+
+    `<div class="roast">${p?esc(sp.appeal==='denied'?'Das Gericht hat gesprochen. Jetzt aber flott.':sp.roast)+(n>2?' ('+n+'. Mal diesen Monat. Respekt.)':''):'Das Rad hat entschieden. Diskussion zwecklos.'}</div>`+
+    (p&&!sp.appeal?'<div class="acts"><button id="appeal">Einspruch!</button><button id="again">Nochmal (feige)</button></div>':'');
+  const a=$('appeal');if(a)a.onclick=appeal;const g=$('again');if(g)g.onclick=()=>doSpin();
+  if(boom){confetti();fanfare(false);try{navigator.vibrate&&navigator.vibrate([80,60,160])}catch(e){}}
+}
+function appeal(){
+  const sp=S.spin;if(!sp||sp.appeal)return;
+  if(Math.random()<0.3){flash('Einspruch stattgegeben! '+sp.win+' ist raus, das Rad dreht neu.');S.history=S.history.slice(1);doSpin(sp.win)}
+  else{sp.appeal='denied';save();fanfare(true);showResult()}
+}
+function flash(t){$('result').innerHTML=`<div class="what" style="margin-top:18px">${esc(t)}</div>`;$('result').classList.remove('shake');void $('result').offsetWidth;$('result').classList.add('shake')}
+function confetti(){const c=['#e4002b','#1f4fff','#111','#fff','#00b34a'];for(let i=0;i<60;i++){const d=document.createElement('i');d.className='confetti';d.style.left=Math.random()*100+'vw';d.style.background=pick(c);d.style.animationDelay=Math.random()*.6+'s';d.style.animationDuration=2+Math.random()*1.5+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),4200)}}
+
+/* ---------- Rendern ---------- */
+function render(){
+  $('tabP').setAttribute('aria-selected',S.tab==='people');$('tabF').setAttribute('aria-selected',S.tab==='free');
+  $('paneP').hidden=S.tab!=='people';$('paneF').hidden=S.tab!=='free';
+  if(document.activeElement!==$('task'))$('task').value=S.task;
+  if(document.activeElement!==$('ftitle'))$('ftitle').value=S.free.title;
+  $('mode').value=S.mode;
+  $('taskPresets').innerHTML=TASKS.map((t,i)=>`<button class="chip" data-t="${i}">${esc(t)}</button>`).join('');
+  $('fPresets').innerHTML=Object.keys(FPRE).map(k=>`<button class="chip" data-f="${esc(k)}">${esc(k)}</button>`).join('');
+  $('people').innerHTML=S.people.map((p,i)=>`<div class="person ${p.here?'here':''}"><button class="tog" data-i="${i}"><span class="dot"></span>${esc(p.n)}</button><button class="im ${S.immune.includes(p.n)?'on':''}" data-im="${i}">${S.immune.includes(p.n)?'Freigekauft':'Brezel'}</button><button class="x" data-del="${i}" aria-label="${esc(p.n)} entfernen">✕</button></div>`).join('')||'<p class="hint">Keiner mehr da. Büro aufgelöst?</p>';
+  $('fItems').innerHTML=S.free.items.map((t,i)=>`<div class="person here"><span style="font-weight:600;padding:8px 2px">${esc(t)}</span><button class="x" data-fdel="${i}" aria-label="${esc(t)} entfernen">✕</button></div>`).join('');
+  if(!spinning&&(!S.spin||Date.now()-S.spin.at>8000||S.spin.kind!==(S.tab==='people'?'p':'f')))drawWheel(wheelItems());else if(!spinning&&S.spin)drawWheel(S.spin.items);
+  const mon=new Date().getMonth(),cnt={};S.history.filter(h=>h.k==='p'&&new Date(h.at).getMonth()===mon).forEach(h=>cnt[h.w]=(cnt[h.w]||0)+1);
+  const rank=Object.entries(cnt).sort((a,b)=>b[1]-a[1]),max=rank[0]?rank[0][1]:1;
+  $('crown').innerHTML=rank[0]?`Büro-Opfer des Monats: <b>${esc(rank[0][0])}</b>. Applaus, bitte.`:'';$('crown').className=rank[0]?'crown':'';
+  $('bars').innerHTML=rank.map(([n,c])=>`<div class="bar"><span>${esc(n)}</span><i style="width:${c/max*100}%"></i><b>${c}</b></div>`).join('')||'<p class="hint">Noch blütenweiße Weste. Für alle.</p>';
+  $('hist').innerHTML=S.history.slice(0,8).map(h=>`<li><b>${esc(h.w)}</b> – ${esc(h.t)}<small>${new Date(h.at).toLocaleString('de-DE',{weekday:'short',hour:'2-digit',minute:'2-digit'})}</small></li>`).join('')||'<li class="hint">Noch nichts passiert.</li>';
+}
+
+/* ---------- Events ---------- */
+$('spin').onclick=()=>doSpin();
+$('tabP').onclick=()=>{S.tab='people';save()};$('tabF').onclick=()=>{S.tab='free';save()};
+let tt;$('task').oninput=e=>{S.task=e.target.value;clearTimeout(tt);tt=setTimeout(save,700)};
+let ft;$('ftitle').oninput=e=>{S.free.title=e.target.value;clearTimeout(ft);ft=setTimeout(save,700)};
+$('mode').onchange=e=>{S.mode=e.target.value;save()};
+$('taskPresets').onclick=e=>{const b=e.target.closest('[data-t]');if(b){S.task=TASKS[b.dataset.t];$('task').value=S.task;save()}};
+$('fPresets').onclick=e=>{const b=e.target.closest('[data-f]');if(b){S.free={title:b.dataset.f==='Mittagessen'?'Was essen wir heute?':b.dataset.f,items:[...FPRE[b.dataset.f]]};$('ftitle').value=S.free.title;save()}};
+$('people').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.i){const p=S.people[b.dataset.i];p.here=!p.here}
+  else if(b.dataset.im){const n=S.people[b.dataset.im].n;S.immune=S.immune.includes(n)?S.immune.filter(x=>x!==n):[...S.immune,n]}
+  else if(b.dataset.del){const n=S.people[b.dataset.del].n;S.people.splice(b.dataset.del,1);S.immune=S.immune.filter(x=>x!==n)}
+  save()};
+$('addP').onsubmit=e=>{e.preventDefault();const v=$('newP').value.trim();if(!v||S.people.some(p=>p.n.toLowerCase()===v.toLowerCase())||S.people.length>=20)return;S.people.push({n:v,here:true});$('newP').value='';save()};
+$('fItems').onclick=e=>{const b=e.target.closest('[data-fdel]');if(b){S.free.items.splice(b.dataset.fdel,1);save()}};
+$('addF').onsubmit=e=>{e.preventDefault();const v=$('newF').value.trim();if(!v||S.free.items.length>=16)return;S.free.items.push(v);$('newF').value='';save()};
+$('exBtn').onclick=()=>{$('excuse').textContent=EX.map(pick).join('')};
+$('exCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('excuse').textContent);$('exCopy').textContent='Kopiert!'}catch(e){$('exCopy').textContent='Ging nicht – markier\'s halt'}setTimeout(()=>$('exCopy').textContent='Kopieren',1500)};
+render();showResult();
+}
+</script>
+</body>
+</html>
