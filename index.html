@@ -76,6 +76,26 @@ footer{text-align:center;font-size:13px;color:var(--mute);padding-bottom:28px}
 .shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @media(prefers-reduced-motion:reduce){.confetti{display:none}.shake{animation:none}}
 [hidden]{display:none!important}
+*,*::before,*::after{cursor:url("data:image/png;base64,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") 17 2,auto!important}
+nav.tabsnav{display:flex;gap:6px;overflow-x:auto;padding:12px max(4vw,14px) 0;max-width:1240px;margin:0 auto}
+nav.tabsnav a{flex:none;font-weight:800;text-decoration:none;color:var(--ink);border:2px solid var(--line);border-radius:99px;padding:8px 14px;background:var(--card);min-height:44px;display:flex;align-items:center}
+nav.tabsnav a.on{background:var(--ink);color:var(--card)}
+.view{max-width:760px;margin:0 auto}
+.orb{width:min(80vw,300px);aspect-ratio:1;border-radius:50%;margin:20px auto;background:radial-gradient(circle at 35% 30%,#555,#111 60%);display:grid;place-items:center;border:4px solid #111;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+.orb span{width:55%;aspect-ratio:1;border-radius:50%;background:#1f4fff;color:#fff;display:grid;place-items:center;text-align:center;font-weight:800;font-size:15px;padding:10px;line-height:1.2}
+.bingo{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.bingo button{min-height:72px;font-size:12px;line-height:1.2;padding:4px;border-radius:10px}
+.bingo button.x{background:var(--red);color:#fff;border-color:#111}
+.cert{background:#fffdf3;color:#111;border:10px double #b8860b;border-radius:6px;padding:28px 22px;text-align:center;margin-top:16px}
+.cert h3{font-family:Bungee,sans-serif;font-weight:400;font-size:clamp(22px,5vw,34px);margin:0 0 8px}
+.cert .nm{font-family:Bungee,sans-serif;font-size:clamp(28px,7vw,46px);color:#e4002b;margin:10px 0}
+.lie{width:min(70vw,240px);aspect-ratio:1;border-radius:50%;margin:20px auto;display:grid;place-items:center;font-family:Bungee,sans-serif;font-size:22px;background:#111;color:#ffd400;border:4px solid #111;user-select:none;-webkit-user-select:none;touch-action:none}
+.lie.scan{animation:pulse .5s infinite alternate}@keyframes pulse{to{background:#1f4fff}}
+.lie.true{background:#00b34a;color:#fff}.lie.false{background:#e4002b;color:#fff}
+body.chef *{font-family:"Comic Sans MS","Comic Sans",cursive!important}
+body.chef #rot{filter:hue-rotate(0);animation:hue 1s linear infinite}@keyframes hue{to{filter:hue-rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#ffd400;font-weight:800;padding:12px 18px;border-radius:14px;z-index:30;max-width:90vw;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.3)}
+.weekend{background:#111;color:#ffd400;text-align:center;font-weight:800;padding:10px}
 </style>
 </head>
 <body>
@@ -100,6 +120,11 @@ footer{text-align:center;font-size:13px;color:var(--mute);padding-bottom:28px}
   </div>
 </header>
 
+<div class="weekend" id="weekend" hidden>Freitag ab 14 Uhr: Offiziell muss keiner mehr irgendwas. Das Rad dreht trotzdem.</div>
+<nav class="tabsnav" id="nav">
+  <a href="#rad">Glücksrad</a><a href="#orakel">Büro-Orakel</a><a href="#bingo">Meeting-Bingo</a><a href="#urkunde">Urkunde</a><a href="#luegen">Lügendetektor</a>
+</nav>
+<div id="v-rad">
 <main class="band">
   <div class="wrap stage">
     <section aria-label="Glücksrad">
@@ -167,12 +192,44 @@ footer{text-align:center;font-size:13px;color:var(--mute);padding-bottom:28px}
     </div>
   </div>
 </section>
+</div>
+
+<section class="band view" id="v-orakel" hidden>
+  <h2>Das Büro-Orakel</h2>
+  <p class="sub">Stell eine Ja/Nein-Frage. Das Orakel lügt nie. Es übertreibt nur.</p>
+  <form class="row" id="oform"><input type="text" id="oq" maxlength="80" placeholder="z. B. Krieg ich heute früher Feierabend?" aria-label="Frage"><button type="submit">Fragen</button></form>
+  <div class="orb"><span id="oa">Frag mich was.</span></div>
+</section>
+
+<section class="band view" id="v-bingo" hidden>
+  <h2>Meeting-Bingo</h2>
+  <p class="sub">Antippen, wenn's passiert. Fünf in einer Reihe: laut „Bingo“ rufen (auf eigene Gefahr).</p>
+  <div class="bingo" id="bingo"></div>
+  <button id="bnew" style="margin-top:12px;width:100%">Neue Karte</button>
+</section>
+
+<section class="band view" id="v-urkunde" hidden>
+  <h2>Urkunden-Druckerei</h2>
+  <p class="sub">Für besondere Verdienste. Oder besondere Versäumnisse.</p>
+  <label for="uname">Für wen?</label>
+  <select id="uname"></select>
+  <button id="ugo" style="margin-top:10px;width:100%">Urkunde ausstellen</button>
+  <div class="cert" id="cert" hidden></div>
+</section>
+
+<section class="band view" id="v-luegen" hidden>
+  <h2>Lügendetektor 3000</h2>
+  <p class="sub">Daumen drauf halten, Aussage machen, loslassen. Wissenschaftlich null Prozent geprüft.</p>
+  <div class="lie" id="lie" role="button" tabindex="0">Halten</div>
+  <p class="hint" style="text-align:center" id="lieTxt"></p>
+</section>
 <footer>Kein Rechtsweg. Kein Einspruch. Okay, ein Einspruch.</footer>
 
 <script>
 {
 const PW_HASH='5d2db9982b353a55cbe1725cf646d894704461f1eac9dba7fe9f4b28054ded9c';
-const DEF_PEOPLE=['Max','Dennis','Jarno','Jörg','Ste','Clara'].map(n=>({n,here:true}));
+const byName=(a,b)=>a.n.localeCompare(b.n,'de',{sensitivity:'base'});
+const DEF_PEOPLE=['Clara','Dennis','Jarno','Jörg','Max','Ste'].map(n=>({n,here:true}));
 const TASKS=['Kaffee holen','Spülmaschine ausräumen','Mittagessen holen','Post holen','Müll rausbringen','Telefon abnehmen','Pakete packen','Kuchen mitbringen','Bei Oli nachfragen'];
 const FPRE={'Mittagessen':['Döner','Pizza','Asia','Bäcker','Kantine','Burger','Salat (haha)'],'Strafe':['10 Liegestütze','Runde Kaffee zahlen','Kompliment an jeden','Eine Stunde Schlager','Lied singen','Kuchen morgen'],'Ja / Nein':['Ja','Nein','Vielleicht','Frag Clara','Auf keinen Fall','Morgen nochmal'],'Feierabend':['Pünktlich','5 Minuten früher','Überstunde','Keiner geht, bevor Jörg geht']};
 const ROAST=['Das Rad hat gesprochen. Das Rad irrt nie.','Herzlichen Glückwunsch, du hast nichts gewonnen.','Statistisch gesehen war das überfällig.','Das Universum mag dich heute nicht besonders.','Bitte mit einem Lächeln. Oder zumindest ohne Augenrollen.','Gerüchten zufolge war das Rad bestochen. Nicht von dir.','Du schaffst das. Wahrscheinlich.','Vorbildlicher Einsatz, den du gleich zeigen wirst.','Ein kleiner Schritt für die Menschheit, ein großer Gang zur Kaffeemaschine.','Karma ist eine Drehscheibe.','Hättest du mal Brezeln mitgebracht.','Das Rad kennt deine Sünden.','Kein Mitleid. Nur Konfetti.','Rechtsmittel: keine. Taschentücher: links.'];
@@ -208,7 +265,7 @@ function apply(raw){let w;try{w=JSON.parse(raw)}catch(e){return}
   ts=w.ts;S=clean(w.s);keep(raw);render();handleSpin(false)}
 function setLive(t,on){$('live').textContent=t;$('live').classList.toggle('on',!!on)}
 function clean(d){const o={...S};
-  if(Array.isArray(d.people))o.people=d.people.filter(p=>p&&typeof p.n==='string').slice(0,20).map(p=>({n:p.n.slice(0,20),here:!!p.here}));
+  if(Array.isArray(d.people))o.people=d.people.filter(p=>p&&typeof p.n==='string').slice(0,20).map(p=>({n:p.n.slice(0,20),here:!!p.here})).sort(byName);
   if(Array.isArray(d.immune))o.immune=d.immune.filter(x=>typeof x==='string');
   if(typeof d.task==='string')o.task=d.task.slice(0,60);
   if(['fair','chaos','pech'].includes(d.mode))o.mode=d.mode;
@@ -340,11 +397,60 @@ $('people').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   else if(b.dataset.im){const n=S.people[b.dataset.im].n;S.immune=S.immune.includes(n)?S.immune.filter(x=>x!==n):[...S.immune,n]}
   else if(b.dataset.del){const n=S.people[b.dataset.del].n;S.people.splice(b.dataset.del,1);S.immune=S.immune.filter(x=>x!==n)}
   save()};
-$('addP').onsubmit=e=>{e.preventDefault();const v=$('newP').value.trim();if(!v||S.people.some(p=>p.n.toLowerCase()===v.toLowerCase())||S.people.length>=20)return;S.people.push({n:v,here:true});$('newP').value='';save()};
+$('addP').onsubmit=e=>{e.preventDefault();const v=$('newP').value.trim();if(!v||S.people.some(p=>p.n.toLowerCase()===v.toLowerCase())||S.people.length>=20)return;S.people.push({n:v,here:true});S.people.sort(byName);$('newP').value='';save()};
 $('fItems').onclick=e=>{const b=e.target.closest('[data-fdel]');if(b){S.free.items.splice(b.dataset.fdel,1);save()}};
 $('addF').onsubmit=e=>{e.preventDefault();const v=$('newF').value.trim();if(!v||S.free.items.length>=16)return;S.free.items.push(v);$('newF').value='';save()};
 $('exBtn').onclick=()=>{$('excuse').textContent=EX.map(pick).join('')};
 $('exCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('excuse').textContent);$('exCopy').textContent='Kopiert!'}catch(e){$('exCopy').textContent='Ging nicht – markier\'s halt'}setTimeout(()=>$('exCopy').textContent='Kopieren',1500)};
+
+/* ---------- Seiten ---------- */
+const VIEWS=['rad','orakel','bingo','urkunde','luegen'];
+function route(){const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):'rad';
+  VIEWS.forEach(x=>$('v-'+x).hidden=x!==v);[...$('nav').children].forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+v));
+  if(v==='urkunde')$('uname').innerHTML=S.people.map(p=>`<option>${esc(p.n)}</option>`).join('')}
+addEventListener('hashchange',route);
+const ORA=['Ja. Eindeutig. Leider.','Nein. Und frag nicht nochmal.','Frag Oli. Oder lieber nicht.','Die Zeichen stehen auf Feierabend.','Nur wenn du Brezeln mitbringst.','Das Orakel muss erst Kaffee trinken.','Absolut. Aber erst nach der Mittagspause.','Die Antwort liegt im Drucker. Er ist kaputt.','Ja, aber du wirst es bereuen.','Nein. Das Rad hat anders entschieden.','Sterne sagen ja, Excel sagt nein.','Vielleicht. Montag nochmal fragen.'];
+$('oform').onsubmit=e=>{e.preventDefault();const q=$('oq').value.trim();const o=$('oa');
+  if(!q){o.textContent='Ohne Frage keine Antwort. Das weiß sogar Ste.';return}
+  o.textContent='…';setTimeout(()=>{o.textContent=/merlin/i.test(q)?'Merlin weiß alles. Merlin schweigt.':pick(ORA);beep(660,.15,'sine',.08)},900)};
+const BING=['„Kurze Frage …“','Drucker kaputt','„Hört ihr mich?“','Jemand isst laut','„Das nehmen wir mit“','Kaffee leer','„Wer hat meinen Joghurt?“','Oli kommt rein','„Schick mir das mal“','Telefon klingelt, keiner geht ran','„Wie war das Passwort?“','Jemand seufzt laut','„Das war schon immer so“','Mittagspause wird verschoben','„Hab ich nicht bekommen“','Kuchen ohne Anlass','Excel stürzt ab','„Eigentlich wollte ich …“','Fenster auf/zu-Streit','„Freitag!“','Paket ohne Lieferschein','„Läuft bei uns“','Jemand redet mit dem PC','„Mach ich gleich“'];
+function bingo(){const c=[...BING].sort(()=>Math.random()-.5).slice(0,24);c.splice(12,0,'FREI (Kaffee)');
+  $('bingo').innerHTML=c.map((t,i)=>`<button data-b="${i}" class="${i===12?'x':''}">${esc(t)}</button>`).join('')}
+$('bingo').onclick=e=>{const b=e.target.closest('[data-b]');if(!b)return;b.classList.toggle('x');
+  const on=[...$('bingo').children].map(x=>x.classList.contains('x')),L=[];for(let i=0;i<5;i++){L.push([0,1,2,3,4].map(j=>i*5+j),[0,1,2,3,4].map(j=>j*5+i))}L.push([0,6,12,18,24],[4,8,12,16,20]);
+  if(L.some(l=>l.every(k=>on[k]))){toast('BINGO! Jetzt aufstehen und es laut sagen.');confetti();fanfare(false)}};
+$('bnew').onclick=bingo;
+const AWARD=['Goldene Kaffeetasse für besonders langsames Kaffeeholen','Ehrenmedaille im Nicht-ans-Telefon-Gehen','Preis für die kreativste Ausrede des Jahres','Auszeichnung „Mitarbeiter des Monats“ (Monat unbekannt)','Orden für heldenhaftes Ignorieren von E-Mails','Lebenswerk-Preis Spülmaschine (nie ausgeräumt)','Diplom in angewandter Mittagspausen-Verlängerung'];
+$('ugo').onclick=()=>{const n=$('uname').value||'Unbekannt',c=$('cert');c.hidden=false;
+  c.innerHTML=`<h3>Urkunde</h3><div>Hiermit wird feierlich</div><div class="nm">${esc(n)}</div><div style="font-weight:800">${esc(pick(AWARD))}</div><p style="margin:14px 0 0;font-size:14px">verliehen. ${new Date().toLocaleDateString('de-DE')} · gez. Das Rad</p>`;fanfare(false)};
+let lt,lstart=0;const lie=$('lie');
+const lon=e=>{e.preventDefault();lstart=Date.now();lie.className='lie scan';lie.textContent='Scanne …';$('lieTxt').textContent='';clearInterval(lt);lt=setInterval(()=>beep(300+Math.random()*600,.05,'square',.04),120)};
+const loff=()=>{if(!lstart)return;clearInterval(lt);const d=Date.now()-lstart;lstart=0;
+  if(d<700){lie.className='lie';lie.textContent='Halten';$('lieTxt').textContent='Länger halten, Feigling.';return}
+  const t=Math.random()<.5;lie.className='lie '+(t?'true':'false');lie.textContent=t?'WAHR':'LÜGE!';$('lieTxt').textContent=t?'Glaubt dir trotzdem keiner.':'Wusste ich\'s doch. Ab zur Kaffeemaschine.';fanfare(!t)};
+lie.addEventListener('pointerdown',lon);lie.addEventListener('pointerup',loff);lie.addEventListener('pointerleave',loff);
+
+/* ---------- Easter Eggs ---------- */
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
+const now=new Date();if(now.getDay()===5&&now.getHours()>=14)$('weekend').hidden=false;
+// Konami-Code -> Chef-Modus
+const KON=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];let kp=0,typed='';
+addEventListener('keydown',e=>{kp=e.key===KON[kp]?kp+1:(e.key===KON[0]?1:0);if(kp===KON.length){kp=0;document.body.classList.toggle('chef');toast(document.body.classList.contains('chef')?'Chef-Modus aktiviert. Ab jetzt alles in Comic Sans.':'Chef-Modus aus. Puh.')}
+  if(e.key.length===1&&!/input|textarea/i.test(document.activeElement.tagName)){typed=(typed+e.key.toLowerCase()).slice(-12);
+    if(typed.endsWith('merlin')){toast('🧙 Merlin segnet dieses Rad. Heute gewinnt keiner. Also verliert jeder.');confetti()}
+    if(typed.endsWith('kaffee')){toast('☕ Kaffee-Notstand ausgerufen! Sofort drehen!');$('spin').classList.add('shake');setTimeout(()=>$('spin').classList.remove('shake'),500)}
+    if(typed.endsWith('feierabend')){toast('Feierabend ist, wenn das Rad es sagt.')}}});
+// 7x auf den Titel
+let tc=0,tt0=0;document.querySelector('h1').addEventListener('click',()=>{const n=Date.now();tc=n-tt0<1500?tc+1:1;tt0=n;if(tc>=7){tc=0;toast('Du hast den Titel 7× angeklickt. Du hast eindeutig nicht genug zu tun. Dreh mal für dich selbst.')}});
+// Klick auf die Radmitte
+$('wheel').addEventListener('click',e=>{const r=$('wheel').getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;if(Math.hypot(x,y)<r.width*.08&&!spinning){beep(150,.2,'sawtooth',.1);toast(pick(['Aua!','Nicht da drücken!','Das ist meine Nase.','Finger weg vom Knopf, der tut nix.']))}});
+// Zu viel Drehen
+let spins=[];$('spin').addEventListener('click',()=>{const n=Date.now();spins=spins.filter(t=>n-t<30000);spins.push(n);if(spins.length>=4)toast('Hör auf zu drehen, du Spielkind. Das Ergebnis bleibt das gleiche: Arbeit.')});
+// Oli darf nicht aufs Rad
+const _add=$('addP').onsubmit;$('addP').onsubmit=e=>{if(/^oli(ver)?$/i.test($('newP').value.trim())){e.preventDefault();$('newP').value='';toast('Oli muss nie. Oli ist Chef. Netter Versuch.');return}_add(e)};
+// Konsole
+try{console.log('%cWer das liest, muss Kaffee holen.','font:bold 20px sans-serif;color:#e4002b')}catch(e){}
+bingo();route();
 render();showResult();
 }
 </script>
